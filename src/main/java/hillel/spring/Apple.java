@@ -1,5 +1,6 @@
 package hillel.spring;
 
+
 import java.util.Objects;
 
 public class Apple {
@@ -36,7 +37,7 @@ public class Apple {
     @Override
     public String toString() {
         return "Apple{" +
-                "weigth=" + weigth +
+                "weight=" + weigth +
                 ", color='" + color + '\'' +
                 '}';
     }
