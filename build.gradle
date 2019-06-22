@@ -1,4 +1,4 @@
-//apply plugin: "io.freefair.lombok"
+
 
 // Apply the java plugin to add support for Java
 apply plugin: 'java'
@@ -20,6 +20,9 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     testCompile("org.assertj:assertj-core:3.11.1")
+
+    compileOnly 'org.projectlombok:lombok:1.18.8'
+    annotationProcessor 'org.projectlombok:lombok:1.18.8'
 }
 
 // Define the main class for the application
