@@ -30,7 +30,7 @@ public class Hw3Controller {
     }
 
     @GetMapping("/greeting/random")
-    public Optional<String> greetingRandom(){
+    public String greetingRandom(){
         return service.getRandomGreeting();
     }
 }

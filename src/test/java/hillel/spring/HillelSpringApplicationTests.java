@@ -3,14 +3,12 @@ package hillel.spring;
 import hillel.spring.HomeWork3.Hw3Repo;
 import hillel.spring.HomeWork3.Hw3Service;
 
-import org.junit.Assert;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Optional;
-import java.util.stream.IntStream;
 import static org.assertj.core.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
@@ -32,10 +30,10 @@ public class HillelSpringApplicationTests {
 		int fr = 0;
 		int it = 0;
 		for (int i = 0; i < 100; i++) {
-			Optional<String> s = hw3Service.getRandomGreeting();
-			if(s.equals(Optional.of("Hello"))){
+			String s = hw3Service.getRandomGreeting();
+			if(s.equals("Hello")){
 				en++;
-			} else if (s.equals(Optional.of("Salut"))){
+			} else if (s.equals("Salut")){
 				fr++;
 			} else
 				it++;
