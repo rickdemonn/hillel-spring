@@ -1,0 +1,183 @@
+{
+	"info": {
+		"_postman_id": "003ce335-10bf-480f-902b-bb8e2bd063c2",
+		"name": "HW4",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "findAllDoctors",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/doctors",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"doctors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "createDoctor",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "    {\n        \"id\": \"\",\n        \"name\": \"AiBolit2\",\n        \"specialization\": \"cheb\"\n    }"
+				},
+				"url": {
+					"raw": "localhost:8081/doctors",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"doctors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "find Doctor by ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/doctors/2",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"doctors",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "find doctrors by spec",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/doctors?specialization=surgeon",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"doctors"
+					],
+					"query": [
+						{
+							"key": "specialization",
+							"value": "surgeon"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "find doctors by first letter of name",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/doctors?name=A",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"doctors"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "A"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update doctor",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 6,\n    \"name\": \"re\",\n    \"specialization\": \"ky\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8081/doctors/6",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"doctors",
+						"6"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete doctor",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 6,\n    \"name\": \"re\",\n    \"specialization\": \"re\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8081/doctors/6",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"doctors",
+						"6"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
