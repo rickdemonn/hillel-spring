@@ -2,12 +2,15 @@ package hillel.spring.DoctorRestAPI;
 
 import lombok.AllArgsConstructor;
 import lombok.val;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.websocket.server.PathParam;
+import java.net.URI;
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 
 @RestController
@@ -46,14 +49,20 @@ public class DoctorRestAPIController {
         try {
             Integer id = doctorRestAPIService.createDoctor(doctor);
             doctor.setId(id);
-            return new ResponseEntity<>(doctor, HttpStatus.CREATED);
+
+            URI location = ServletUriComponentsBuilder
+                    .fromCurrentRequest()
+                    .buildAndExpand(doctor).toUri();
+
+            return ResponseEntity.created(location).body(doctor);
         } catch (Exception e){
             throw new RuntimeException("Oops, error");
         }
     }
 
     @PutMapping("/doctors/{id}")
-    public ResponseEntity<?> upDateDoctor(@PathVariable Integer id,
+    @ResponseStatus(NO_CONTENT)
+    public void upDateDoctor(@PathVariable Integer id,
                                           @RequestBody Doctor doctor){
         if(!id.equals(doctor.getId())){
             throw new IdNotEqualsForUpdateDoctorException();
@@ -62,15 +71,14 @@ public class DoctorRestAPIController {
         doctorRestAPIService.findDoctorByID(id).orElseThrow(DoctorNotFoundException::new);
 
         doctorRestAPIService.upDateDoctor(id,doctor);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/doctors/{id}")
-    public ResponseEntity<?> deleteDoctor(@PathVariable Integer id){
+    @ResponseStatus(NO_CONTENT)
+    public void deleteDoctor(@PathVariable Integer id){
 
         doctorRestAPIService.findDoctorByID(id).orElseThrow(DoctorNotFoundException::new);
 
         doctorRestAPIService.deleteDoctor(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

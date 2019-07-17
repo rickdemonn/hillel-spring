@@ -3,14 +3,16 @@ package hillel.spring.DoctorRestAPI;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Repository
 public class DoctorRestAPIRepo {
-    private final List<Doctor> doctors = new ArrayList<>();
-    private Integer id = 4;
+    private final List<Doctor> doctors = Collections.synchronizedList(new ArrayList<>());
+    private AtomicInteger id = new AtomicInteger(4);
     {
         doctors.add(new Doctor(1, "AiBolit", "veterinarian"));
         doctors.add(new Doctor(2, "Dr. Chaos", "surgeon"));
@@ -22,10 +24,10 @@ public class DoctorRestAPIRepo {
         return doctors;
     }
 
-    public synchronized Integer createDoctor(Doctor doctor) {
-        this.id++;
-        doctors.add(new Doctor(id, doctor.getName(), doctor.getSpecialization()));
-        return id;
+    public Integer createDoctor(Doctor doctor) {
+        this.id.getAndIncrement();
+        doctors.add(new Doctor(id.get(), doctor.getName(), doctor.getSpecialization()));
+        return id.get();
     }
 
     public Optional<Doctor> findDoctorByID(Integer id) {
@@ -46,7 +48,7 @@ public class DoctorRestAPIRepo {
                 .collect(Collectors.toList());
     }
 
-    public synchronized void upDateDoctor(Integer id, Doctor doctor) {
+    public void upDateDoctor(Integer id, Doctor doctor) {
          doctors.stream()
                             .filter(doc -> doc.getId().equals(id))
                             .forEach(doc -> {
@@ -55,7 +57,7 @@ public class DoctorRestAPIRepo {
                             });
     }
 
-    public synchronized void deleteDoctor(Integer id) {
+    public void deleteDoctor(Integer id) {
         doctors.removeIf(doc -> doc.getId().equals(id));
     }
 
