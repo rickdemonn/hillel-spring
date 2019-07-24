@@ -1,14 +1,18 @@
 package hillel.spring.DoctorRestAPI;
 
+import hillel.spring.DoctorRestAPI.dto.DoctorDtoConverter;
+import hillel.spring.DoctorRestAPI.dto.DoctorInputDto;
+import hillel.spring.DoctorRestAPI.dto.DoctorOutputDto;
 import lombok.AllArgsConstructor;
 import lombok.val;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.websocket.server.PathParam;
-import java.net.URI;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
@@ -17,44 +21,52 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 @AllArgsConstructor
 public class DoctorRestAPIController {
     private final DoctorRestAPIService doctorRestAPIService;
+    private final DoctorDtoConverter doctorDtoConverter;
+
+    private final UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.newInstance()
+                                                                                .scheme("http")
+                                                                                .host("localhost")
+                                                                                .port(8081)
+                                                                                .path("/doctors/{id}");
 
     @GetMapping("/doctors")
-    public List<Doctor> findAllDoctors(){
-        return doctorRestAPIService.findAllDoctors();
+    public List<DoctorOutputDto> findDoctors(@RequestParam Optional<String> specialization,
+                                             @RequestParam Optional<String> name){
+
+        Optional<Predicate<Doctor>> mayBeSpecialization = specialization.map(this::filterBySpecialization);
+        Optional<Predicate<Doctor>> mayBeFirstLetterOfName = name.map(this::filterByFirstLetterOfName);
+
+        Predicate<Doctor> predicate = Stream.of(mayBeFirstLetterOfName, mayBeSpecialization)
+                                            .flatMap(Optional::stream)
+                                            .reduce(Predicate::and)
+                                            .orElse(doc -> true);
+
+
+        return doctorDtoConverter.toModel(doctorRestAPIService.findDoctors(predicate));
+    }
+
+    private Predicate<Doctor> filterByFirstLetterOfName(String firstLetterOfName) {
+        return doctor -> doctor.getName().startsWith(firstLetterOfName);
+    }
+
+    private Predicate<Doctor> filterBySpecialization(String specialization) {
+        return doctor -> doctor.getSpecialization().equals(specialization);
     }
 
     @GetMapping("/doctors/{id}")
-    public Doctor findDoctorByID(@PathVariable Integer id){
+    public DoctorOutputDto findDoctorByID(@PathVariable Integer id){
         val mayBeDoctor = doctorRestAPIService.findDoctorByID(id);
 
-        return mayBeDoctor.orElseThrow(DoctorNotFoundException::new);
-    }
-
-    @GetMapping(value = "/doctors",params = "specialization")
-    public List<Doctor> findDoctorBySpecialization(@PathParam("specialization") String specialization){
-        return doctorRestAPIService.findDoctorBySpecialization(specialization);
-    }
-
-    @GetMapping(value = "/doctors",params = "name")
-    public List<Doctor> findDoctorsByFirstLetter(@PathParam("name") String name){
-        return doctorRestAPIService.findDoctorsByFirstLetter(name);
+        return doctorDtoConverter.toModel(mayBeDoctor.orElseThrow(DoctorNotFoundException::new));
     }
 
     @PostMapping("/doctors")
-    public ResponseEntity<?> createDoctor(@RequestBody Doctor doctor){
-        if (doctor.getId() != null) {
-            throw new IdPresentForCreateException();
-        }
+    public ResponseEntity<?> createDoctor(@RequestBody DoctorInputDto docDto){
+        final val doctor = doctorDtoConverter.toModel(docDto);
 
         try {
             Integer id = doctorRestAPIService.createDoctor(doctor);
-            doctor.setId(id);
-
-            URI location = ServletUriComponentsBuilder
-                    .fromCurrentRequest()
-                    .buildAndExpand(doctor).toUri();
-
-            return ResponseEntity.created(location).body(doctor);
+            return ResponseEntity.created(uriComponentsBuilder.build(id)).build();
         } catch (Exception e){
             throw new RuntimeException("Oops, error");
         }
@@ -63,12 +75,10 @@ public class DoctorRestAPIController {
     @PutMapping("/doctors/{id}")
     @ResponseStatus(NO_CONTENT)
     public void upDateDoctor(@PathVariable Integer id,
-                                          @RequestBody Doctor doctor){
-        if(!id.equals(doctor.getId())){
-            throw new IdNotEqualsForUpdateDoctorException();
-        }
+                             @RequestBody DoctorInputDto docDto){
 
         doctorRestAPIService.findDoctorByID(id).orElseThrow(DoctorNotFoundException::new);
+        final val doctor = doctorDtoConverter.toModel(docDto);
 
         doctorRestAPIService.upDateDoctor(id,doctor);
     }
