@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "name": "AiBolit",
+    "specialization": "veterinarian"
+  },
+  {
+    "id": 2,
+    "name": "Dr. Chaos",
+    "specialization": "surgeon"
+  },
+  {
+    "id": 3,
+    "name": "Dr. Mephesto",
+    "specialization": "geneticist"
+  },
+  {
+    "id": 4,
+    "name": "Dr. Sklifasovskiy",
+    "specialization": "surgeon"
+  }
+]
