@@ -5,6 +5,7 @@ import hillel.spring.DoctorRestAPI.dto.DoctorInputDto;
 import hillel.spring.DoctorRestAPI.dto.DoctorOutputDto;
 import lombok.AllArgsConstructor;
 import lombok.val;
+import org.mapstruct.factory.Mappers;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -12,6 +13,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.springframework.http.HttpStatus.NO_CONTENT;
@@ -21,7 +23,7 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 @AllArgsConstructor
 public class DoctorRestAPIController {
     private final DoctorRestAPIService doctorRestAPIService;
-    private final DoctorDtoConverter doctorDtoConverter;
+    private final DoctorDtoConverter doctorDtoConverter = Mappers.getMapper(DoctorDtoConverter.class);
 
     private final UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.newInstance()
                                                                                 .scheme("http")
@@ -42,7 +44,9 @@ public class DoctorRestAPIController {
                                             .orElse(doc -> true);
 
 
-        return doctorDtoConverter.toModel(doctorRestAPIService.findDoctors(predicate));
+        return doctorRestAPIService.findDoctors(predicate).stream()
+                                                          .map(doctorDtoConverter::toDto)
+                                                          .collect(Collectors.toList());
     }
 
     private Predicate<Doctor> filterByFirstLetterOfName(String firstLetterOfName) {
@@ -57,7 +61,7 @@ public class DoctorRestAPIController {
     public DoctorOutputDto findDoctorByID(@PathVariable Integer id){
         val mayBeDoctor = doctorRestAPIService.findDoctorByID(id);
 
-        return doctorDtoConverter.toModel(mayBeDoctor.orElseThrow(DoctorNotFoundException::new));
+        return doctorDtoConverter.toDto(mayBeDoctor.orElseThrow(DoctorNotFoundException::new));
     }
 
     @PostMapping("/doctors")

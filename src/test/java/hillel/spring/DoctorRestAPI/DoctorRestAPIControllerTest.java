@@ -50,11 +50,7 @@ public class DoctorRestAPIControllerTest {
 
         mockMvc.perform(get("/doctors/{id}",1))
                 .andExpect(status().isOk())
-                .andExpect(content().json("{\n" +
-                        "    \"id\": 1,\n" +
-                        "    \"name\": \"Aaa\",\n" +
-                        "    \"specialization\": \"surgeon\"\n" +
-                        "  }"));
+                .andExpect(content().json(fromResource("DoctorRestAPI/find-doctorbyID.json")));
 
         mockMvc.perform(get("/doctors/{id}",3))
                 .andExpect(status().isNotFound());

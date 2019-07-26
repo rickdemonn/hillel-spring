@@ -67,15 +67,15 @@ esac
 CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
 
 # Determine the Java command to use to start the JVM.
-if [ -n "$JAVA_HOME" ] ; then
-    if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
+if [ -n "/usr/lib/jvm/java-12-oracle" ] ; then
+    if [ -x "/usr/lib/jvm/java-12-oracle/jre/sh/java" ] ; then
         # IBM's JDK on AIX uses strange locations for the executables
-        JAVACMD="$JAVA_HOME/jre/sh/java"
+        JAVACMD="/usr/lib/jvm/java-12-oracle/jre/sh/java"
     else
-        JAVACMD="$JAVA_HOME/bin/java"
+        JAVACMD="/usr/lib/jvm/java-12-oracle/bin/java"
     fi
     if [ ! -x "$JAVACMD" ] ; then
-        die "ERROR: JAVA_HOME is set to an invalid directory: $JAVA_HOME
+        die "ERROR: JAVA_HOME is set to an invalid directory: /usr/lib/jvm/java-12-oracle
 
 Please set the JAVA_HOME variable in your environment to match the
 location of your Java installation."
