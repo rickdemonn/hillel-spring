@@ -8,40 +8,40 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class DoctorRestAPIService {
-    private final DoctorRestAPIRepo doctorRestAPIRepo;
+public class DoctorService {
+    private final DoctorRepo doctorRepo;
 
     public List<Doctor> findDoctors (Optional<String> specialization,
                                      Optional<String> name,
                                      Optional<List<String>> specializations){
         if (specialization.isPresent() && name.isPresent()) {
-            return doctorRestAPIRepo.findBySpecializationAndName(specialization.get(), name.get());
+            return doctorRepo.findBySpecializationAndNameStartsWithIgnoreCase(specialization.get(), name.get());
         }
         if (specialization.isPresent()) {
-            return doctorRestAPIRepo.findBySpecialization(specialization.get());
+            return doctorRepo.findBySpecialization(specialization.get());
         }
         if (name.isPresent()) {
-            return doctorRestAPIRepo.findByName(name.get());
+            return doctorRepo.findByNameStartsWithIgnoreCase(name.get());
         }
         if (specializations.isPresent()) {
-            return doctorRestAPIRepo.findBySpecializations(specializations.get());
+            return doctorRepo.findAllBySpecializationIn(specializations.get());
         }
-        return doctorRestAPIRepo.findAll();
+        return doctorRepo.findAll();
     }
 
     public Doctor createDoctor(Doctor doctor) {
-        return doctorRestAPIRepo.save(doctor);
+        return doctorRepo.save(doctor);
     }
 
     public Optional<Doctor> findDoctorByID(Integer id) {
-        return doctorRestAPIRepo.findById(id);
+        return doctorRepo.findById(id);
     }
 
     public void upDateDoctor(Doctor doctor) {
-        doctorRestAPIRepo.save(doctor);
+        doctorRepo.save(doctor);
     }
 
     public void deleteDoctor(Integer id) {
-        doctorRestAPIRepo.deleteById(id);
+        doctorRepo.deleteById(id);
     }
 }

@@ -22,23 +22,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class DoctorRestAPIControllerTest {
+public class DoctorControllerTest {
 
     @Autowired
     MockMvc mockMvc;
 
     @Autowired
-    DoctorRestAPIRepo doctorRestAPIRepo;
+    DoctorRepo doctorRepo;
 
     @After
     public void cleanUp(){
-        doctorRestAPIRepo.deleteAll();
+        doctorRepo.deleteAll();
     }
 
 
     @Test
     public void findDoctorById() throws Exception {
-        Integer id = doctorRestAPIRepo.save(new Doctor(null,"AiBolit","veterinarian")).getId();
+        Integer id = doctorRepo.save(new Doctor(null,"AiBolit","veterinarian")).getId();
 
         mockMvc.perform(get("/doctors/{id}", id))
                 .andExpect(status().isOk())
@@ -48,8 +48,8 @@ public class DoctorRestAPIControllerTest {
 
     @Test
     public void shouldFindAllDoctors() throws Exception {
-        doctorRestAPIRepo.save(new Doctor(null,"AiBolit","veterinarian"));
-        doctorRestAPIRepo.save(new Doctor(null,"Dr. Chaos","surgeon"));
+        doctorRepo.save(new Doctor(null,"AiBolit","veterinarian"));
+        doctorRepo.save(new Doctor(null,"Dr. Chaos","surgeon"));
 
         mockMvc.perform(get("/doctors"))
                 .andExpect(status().isOk())
@@ -65,10 +65,10 @@ public class DoctorRestAPIControllerTest {
 
     @Test
     public void shouldReturnSurgeon() throws Exception {
-        doctorRestAPIRepo.save(new Doctor(null,"ccc","veterinarian"));
-        doctorRestAPIRepo.save(new Doctor(null,"aaa","surgeon"));
-        doctorRestAPIRepo.save(new Doctor(null,"bbb","surgeon"));
-        doctorRestAPIRepo.save(new Doctor(null,"ccc","veterinarian"));
+        doctorRepo.save(new Doctor(null,"ccc","veterinarian"));
+        doctorRepo.save(new Doctor(null,"aaa","surgeon"));
+        doctorRepo.save(new Doctor(null,"bbb","surgeon"));
+        doctorRepo.save(new Doctor(null,"ccc","veterinarian"));
 
         mockMvc.perform(get("/doctors").param("specialization", "surgeon"))
                 .andExpect(status().isOk())
@@ -79,11 +79,11 @@ public class DoctorRestAPIControllerTest {
 
     @Test
     public void shouldReturnDoctorsByFirstLetterOfName() throws Exception {
-        doctorRestAPIRepo.save(new Doctor(null,"Aaa","surgeon"));
-        doctorRestAPIRepo.save(new Doctor(null,"DAaa","surgeon"));
-        doctorRestAPIRepo.save(new Doctor(null,"bbb","surgeon"));
-        doctorRestAPIRepo.save(new Doctor(null,"ccc","surgeon"));
-        doctorRestAPIRepo.save(new Doctor(null,"aaa","surgeon"));
+        doctorRepo.save(new Doctor(null,"Aaa","surgeon"));
+        doctorRepo.save(new Doctor(null,"DAaa","surgeon"));
+        doctorRepo.save(new Doctor(null,"bbb","surgeon"));
+        doctorRepo.save(new Doctor(null,"ccc","surgeon"));
+        doctorRepo.save(new Doctor(null,"aaa","surgeon"));
 
         mockMvc.perform(get("/doctors").param("name","A"))
                 .andExpect(status().isOk())
@@ -94,13 +94,13 @@ public class DoctorRestAPIControllerTest {
 
     @Test
     public void shouldReturnDoctorsBySpecAndFirstLetter() throws Exception {
-        doctorRestAPIRepo.save(new Doctor(null,"Aaa","surgeon"));
-        doctorRestAPIRepo.save(new Doctor(null,"DAaa","surgeon"));
-        doctorRestAPIRepo.save(new Doctor(null,"bbb","surgeon"));
-        doctorRestAPIRepo.save(new Doctor(null,"ccc","surgeon"));
-        doctorRestAPIRepo.save(new Doctor(null,"aaa","veterinarian"));
-        doctorRestAPIRepo.save(new Doctor(null,"AAA","veterinarian"));
-        doctorRestAPIRepo.save(new Doctor(null,"BB","veterinarian"));
+        doctorRepo.save(new Doctor(null,"Aaa","surgeon"));
+        doctorRepo.save(new Doctor(null,"DAaa","surgeon"));
+        doctorRepo.save(new Doctor(null,"bbb","surgeon"));
+        doctorRepo.save(new Doctor(null,"ccc","surgeon"));
+        doctorRepo.save(new Doctor(null,"aaa","veterinarian"));
+        doctorRepo.save(new Doctor(null,"AAA","veterinarian"));
+        doctorRepo.save(new Doctor(null,"BB","veterinarian"));
 
         mockMvc.perform(get("/doctors").param("name","A").param("specialization", "surgeon"))
                 .andExpect(status().isOk())
@@ -111,10 +111,10 @@ public class DoctorRestAPIControllerTest {
 
     @Test
     public void shouldReturnDoctorsBySpecializations() throws Exception {
-        doctorRestAPIRepo.save(new Doctor(null,"Aaa","surgeon"));
-        doctorRestAPIRepo.save(new Doctor(null,"BBB","veterinarian"));
-        doctorRestAPIRepo.save(new Doctor(null,"CCC","geneticist"));
-        doctorRestAPIRepo.save(new Doctor(null,"DDD","geneticist"));
+        doctorRepo.save(new Doctor(null,"Aaa","surgeon"));
+        doctorRepo.save(new Doctor(null,"BBB","veterinarian"));
+        doctorRepo.save(new Doctor(null,"CCC","geneticist"));
+        doctorRepo.save(new Doctor(null,"DDD","geneticist"));
 
         mockMvc.perform(get("/doctors").param("specializations","surgeon","veterinarian"))
                 .andExpect(status().isOk())
@@ -135,8 +135,11 @@ public class DoctorRestAPIControllerTest {
         Integer id = Integer.parseInt(response.getHeader("location")
                 .replace("http://localhost:8081/doctors/", ""));
 
-        assertThat(doctorRestAPIRepo.findById(id)).isPresent();
+        assertThat(doctorRepo.findById(id)).isPresent();
+    }
 
+    @Test
+    public void shouldCanNotCreateDoctor() throws Exception {
         mockMvc.perform(post("/doctors").contentType("application/json")
                 .content(fromResource("DoctorRestAPI/tryToCreateWrong-doctor.json")))
                 .andExpect(status().isBadRequest());
@@ -144,7 +147,7 @@ public class DoctorRestAPIControllerTest {
 
     @Test
     public void shouldUpdateDoctor() throws Exception {
-        Integer id = doctorRestAPIRepo.save(new Doctor(null,"Aaa","surgeon")).getId();
+        Integer id = doctorRepo.save(new Doctor(null,"Aaa","surgeon")).getId();
 
         mockMvc.perform(put("/doctors/{id}",id).contentType("application/json")
                 .content(fromResource("DoctorRestAPI/update-doctor.json")))
@@ -158,12 +161,12 @@ public class DoctorRestAPIControllerTest {
                 .content(fromResource("DoctorRestAPI/tryToCreateWrong-doctor.json")))
                 .andExpect(status().isBadRequest());
 
-        assertThat(doctorRestAPIRepo.findById(id).get().getName()).isEqualTo("Zlo");
+        assertThat(doctorRepo.findById(id).get().getName()).isEqualTo("Zlo");
     }
 
     @Test
     public void shouldDeleteDoctor() throws Exception {
-        Integer id = doctorRestAPIRepo.save(new Doctor(null,"Aaa","surgeon")).getId();
+        Integer id = doctorRepo.save(new Doctor(null,"Aaa","surgeon")).getId();
 
         mockMvc.perform(delete("/doctors/{id}",id))
                 .andExpect(status().isNoContent());
@@ -171,7 +174,7 @@ public class DoctorRestAPIControllerTest {
         mockMvc.perform(delete("/doctors/{id}",150))
                 .andExpect(status().isNotFound());
 
-        assertThat(doctorRestAPIRepo.findById(id)).isEmpty();
+        assertThat(doctorRepo.findById(id)).isEmpty();
     }
 
     public String fromResource(String path){
