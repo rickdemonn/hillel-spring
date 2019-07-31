@@ -1,0 +1,6 @@
+server.port: 8081
+doctor.hostname: localhost
+doctor.specializations.specializations:
+  - veterinarian
+  - surgeon
+  - geneticist

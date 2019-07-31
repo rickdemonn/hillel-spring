@@ -1,6 +1,6 @@
-package hillel.spring.DoctorRestAPI.dto;
+package hillel.spring.doctor.dto;
 
-import hillel.spring.DoctorRestAPI.Doctor;
+import hillel.spring.doctor.Doctor;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

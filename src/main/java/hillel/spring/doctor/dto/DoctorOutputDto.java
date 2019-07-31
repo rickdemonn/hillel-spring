@@ -1,4 +1,4 @@
-package hillel.spring.DoctorRestAPI.dto;
+package hillel.spring.doctor.dto;
 
 import lombok.Data;
 
