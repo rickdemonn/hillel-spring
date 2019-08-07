@@ -1,4 +1,4 @@
 {
   "name": "Zlo",
-  "specialization": "destroyer"
+  "specializations":["surgeon","destroyer"]
 }
