@@ -4,10 +4,9 @@ package hillel.spring.doctor;
 import hillel.spring.doctor.dto.DoctorDtoConverter;
 import hillel.spring.doctor.dto.DoctorInputDto;
 import hillel.spring.doctor.dto.DoctorOutputDto;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,17 +20,18 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 
 @RestController
+@Slf4j
 public class DoctorController {
     private final DoctorService doctorService;
     private final DoctorDtoConverter doctorDtoConverter;
     private final SpecializationsConfig specializationsConfig;
     private final UriComponentsBuilder uriComponentsBuilder;
-    private final Logger logger = LoggerFactory.getLogger(DoctorController.class);
+
 
     public DoctorController(DoctorService doctorService,
                             DoctorDtoConverter doctorDtoConverter,
                             SpecializationsConfig specializationsConfig,
-                            @Value("${doctor.hostname:localhost}") String hostname) {
+                            @Value("${server.address:localhost}") String hostname) {
         this.doctorService = doctorService;
         this.doctorDtoConverter = doctorDtoConverter;
         this.specializationsConfig = specializationsConfig;
@@ -65,7 +65,7 @@ public class DoctorController {
             val newDoc = doctorService.createDoctor(doctor);
             return ResponseEntity.created(uriComponentsBuilder.build(newDoc.getId())).build();
         } else {
-            logger.error("Choice specialization: " + doctor.getSpecializations()
+            log.error("Choice specialization: " + doctor.getSpecializations()
                     + " Allow specializations: " + specializationsConfig.getSpecializations().toString());
             throw new WrongSpecializationsException();
         }
@@ -81,7 +81,7 @@ public class DoctorController {
         if (checkSpecializations(doctor)) {
             doctorService.upDateDoctor(doctor);
         } else {
-            logger.error("Choice specialization: " + doctor.getSpecializations()
+            log.error("Choice specialization: " + doctor.getSpecializations()
                     + " Allow specializations: " + specializationsConfig.getSpecializations().toString());
             throw new WrongSpecializationsException();
         }

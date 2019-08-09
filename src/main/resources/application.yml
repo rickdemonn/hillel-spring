@@ -1,4 +1,5 @@
 server.port: 8081
+server.address: localhost
 spring:
   jpa:
     open-in-view: false

@@ -3,6 +3,6 @@ package hillel.spring.appointments.dto;
 import lombok.Data;
 
 @Data
-public class AppointmentsInputDto {
+public class AppointmentInputDto {
     private Integer petId;
 }

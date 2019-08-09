@@ -5,6 +5,6 @@ import lombok.Data;
 import java.util.Map;
 
 @Data
-public class AppointmentsOutputDto {
+public class AppointmentOutputDto {
     private Map<Integer, Integer> hourToPetId;
 }

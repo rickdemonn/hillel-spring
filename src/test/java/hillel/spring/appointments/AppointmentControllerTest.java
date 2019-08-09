@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -24,13 +25,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class AppointmentsControllerTest {
+public class AppointmentControllerTest {
 
     @Autowired
     MockMvc mockMvc;
 
     @Autowired
-    AppointmentsRepo appointmentsRepo;
+    AppointmentRepo appointmentRepo;
 
     @Autowired
     DoctorRepo doctorRepo;
@@ -40,16 +41,16 @@ public class AppointmentsControllerTest {
 
     @After
     public void cleanUp() {
-        appointmentsRepo.deleteAll();
+        appointmentRepo.deleteAll();
         doctorRepo.deleteAll();
         petRepo.deleteAll();
     }
 
     @Test
     public void getScheduleOfDoctor() throws Exception {
-        Integer docId = doctorRepo.save(new Doctor(null, "Aaa", Arrays.asList("veterinarian", "surgeon"))).getId();
+        Integer docId = doctorRepo.save(new Doctor(null, "Aaa", List.of("veterinarian", "surgeon"))).getId();
         Integer petId = petRepo.save(new Pet(null, "Gu4ka")).getId();
-        Integer appId = appointmentsRepo.save(new Appointments(null, docId, petId, 9, LocalDate.parse("2019-01-01"))).getId();
+        Integer appId = appointmentRepo.save(new Appointment(null, docId, petId, 9, LocalDate.parse("2019-01-01"))).getId();
 
         mockMvc.perform(get("/doctors/{docId}/schedule/{date}", docId, "2019-01-01"))
                 .andExpect(status().isOk());
@@ -57,23 +58,17 @@ public class AppointmentsControllerTest {
         mockMvc.perform(get("/doctors/{docId}/schedule/{date}", 150, "2019-01-01"))
                 .andExpect(status().isNotFound());
 
-        assertThat(appointmentsRepo.findById(appId)).isPresent();
+        assertThat(appointmentRepo.findById(appId)).isPresent();
 
     }
 
     @Test
     public void makeAPetAppointment() throws Exception {
-        Integer docId = doctorRepo.save(new Doctor(null, "Aaa", Arrays.asList("veterinarian", "surgeon"))).getId();
+        Integer docId = doctorRepo.save(new Doctor(null, "Aaa", List.of("veterinarian", "surgeon"))).getId();
         Integer petId = petRepo.save(new Pet(null, "Gu4ka")).getId();
         Integer pet2Id = petRepo.save(new Pet(null, "Gu4ka2")).getId();
-
-        mockMvc.perform(post("/doctors/{docId}/schedule/{date}/{busyHour}", docId, "2019-01-01", "8").contentType("application/json")
-                .content("{ \"petId\": " + petId + " }"))
-                .andExpect(status().isNoContent());
-
-        mockMvc.perform(post("/doctors/{docId}/schedule/{date}/{busyHour}", docId, "2019-01-01", "10").contentType("application/json")
-                .content("{ \"petId\": " + pet2Id + " }"))
-                .andExpect(status().isNoContent());
+        appointmentRepo.save(new Appointment(null,docId,petId,8,LocalDate.parse("2019-01-01")));
+        appointmentRepo.save(new Appointment(null,docId,pet2Id,10,LocalDate.parse("2019-01-01")));
 
         mockMvc.perform(get("/doctors/{docId}/schedule/{date}", docId, "2019-01-01"))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.hourToPetId.8", is(petId)))
@@ -82,7 +77,7 @@ public class AppointmentsControllerTest {
 
     @Test
     public void tryToMakeAppointmentWithWrongPetId() throws Exception{
-        Integer docId = doctorRepo.save(new Doctor(null, "Aaa", Arrays.asList("veterinarian", "surgeon"))).getId();
+        Integer docId = doctorRepo.save(new Doctor(null, "Aaa", List.of("veterinarian", "surgeon"))).getId();
         Integer petId = petRepo.save(new Pet(null, "Gu4ka")).getId();
 
         mockMvc.perform(post("/doctors/{docId}/schedule/{date}/{busyHour}", docId, "2019-01-01", "8").contentType("application/json")
@@ -92,7 +87,7 @@ public class AppointmentsControllerTest {
 
     @Test
     public void tryToMakeAppointmentWithWrongDocId() throws Exception{
-        Integer docId = doctorRepo.save(new Doctor(null, "Aaa", Arrays.asList("veterinarian", "surgeon"))).getId();
+        Integer docId = doctorRepo.save(new Doctor(null, "Aaa", List.of("veterinarian", "surgeon"))).getId();
         Integer petId = petRepo.save(new Pet(null, "Gu4ka")).getId();
 
         mockMvc.perform(post("/doctors/{docId}/schedule/{date}/{busyHour}",150,"2019-01-01","8").contentType("application/json")
@@ -102,7 +97,7 @@ public class AppointmentsControllerTest {
 
     @Test
     public void tryToMakeAppointmentWithWrongWorkingTime() throws Exception{
-        Integer docId = doctorRepo.save(new Doctor(null, "Aaa", Arrays.asList("veterinarian", "surgeon"))).getId();
+        Integer docId = doctorRepo.save(new Doctor(null, "Aaa", List.of("veterinarian", "surgeon"))).getId();
         Integer petId = petRepo.save(new Pet(null, "Gu4ka")).getId();
 
         mockMvc.perform(post("/doctors/{docId}/schedule/{date}/{busyHour}",docId,"2019-01-01","3").contentType("application/json")

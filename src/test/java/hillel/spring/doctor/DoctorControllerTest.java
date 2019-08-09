@@ -14,6 +14,7 @@ import org.springframework.util.ResourceUtils;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.List;
 
 
 import static org.assertj.core.api.Assertions.*;
@@ -40,7 +41,7 @@ public class DoctorControllerTest {
 
     @Test
     public void findDoctorById() throws Exception {
-        Integer id = doctorRepo.save(new Doctor(null, "AiBolit", Arrays.asList("veterinarian", "surgeon"))).getId();
+        Integer id = doctorRepo.save(new Doctor(null, "AiBolit", List.of("veterinarian", "surgeon"))).getId();
 
         mockMvc.perform(get("/doctors/{id}", id))
                 .andExpect(status().isOk())
@@ -51,8 +52,8 @@ public class DoctorControllerTest {
 
     @Test
     public void shouldFindAllDoctors() throws Exception {
-        doctorRepo.save(new Doctor(null, "AiBolit", Arrays.asList("veterinarian")));
-        doctorRepo.save(new Doctor(null, "Dr. Chaos", Arrays.asList("veterinarian", "surgeon")));
+        doctorRepo.save(new Doctor(null, "AiBolit", List.of("veterinarian")));
+        doctorRepo.save(new Doctor(null, "Dr. Chaos", List.of("veterinarian", "surgeon")));
 
         mockMvc.perform(get("/doctors"))
                 .andExpect(status().isOk())
@@ -69,10 +70,10 @@ public class DoctorControllerTest {
 
     @Test
     public void shouldReturnSurgeon() throws Exception {
-        doctorRepo.save(new Doctor(null, "ccc", Arrays.asList("veterinarian", "surgeon")));
-        doctorRepo.save(new Doctor(null, "aaa", Arrays.asList("surgeon", "veterinarian")));
-        doctorRepo.save(new Doctor(null, "bbb", Arrays.asList("veterinarian", "geneticist")));
-        doctorRepo.save(new Doctor(null, "ccc", Arrays.asList("geneticist", "veterinarian")));
+        doctorRepo.save(new Doctor(null, "ccc", List.of("veterinarian", "surgeon")));
+        doctorRepo.save(new Doctor(null, "aaa", List.of("surgeon", "veterinarian")));
+        doctorRepo.save(new Doctor(null, "bbb", List.of("veterinarian", "geneticist")));
+        doctorRepo.save(new Doctor(null, "ccc", List.of("geneticist", "veterinarian")));
 
         mockMvc.perform(get("/doctors").param("specializations", "surgeon"))
                 .andExpect(status().isOk())
@@ -83,11 +84,11 @@ public class DoctorControllerTest {
 
     @Test
     public void shouldReturnDoctorsByFirstLetterOfName() throws Exception {
-        doctorRepo.save(new Doctor(null, "Aaa", Arrays.asList("surgeon", "veterinarian")));
-        doctorRepo.save(new Doctor(null, "DAaa", Arrays.asList("surgeon", "veterinarian")));
-        doctorRepo.save(new Doctor(null, "bbb", Arrays.asList("surgeon", "veterinarian")));
-        doctorRepo.save(new Doctor(null, "ccc", Arrays.asList("surgeon", "veterinarian")));
-        doctorRepo.save(new Doctor(null, "aaa", Arrays.asList("surgeon", "veterinarian")));
+        doctorRepo.save(new Doctor(null, "Aaa", List.of("surgeon", "veterinarian")));
+        doctorRepo.save(new Doctor(null, "DAaa", List.of("surgeon", "veterinarian")));
+        doctorRepo.save(new Doctor(null, "bbb", List.of("surgeon", "veterinarian")));
+        doctorRepo.save(new Doctor(null, "ccc", List.of("surgeon", "veterinarian")));
+        doctorRepo.save(new Doctor(null, "aaa", List.of("surgeon", "veterinarian")));
 
         mockMvc.perform(get("/doctors").param("name", "A"))
                 .andExpect(status().isOk())
@@ -98,13 +99,13 @@ public class DoctorControllerTest {
 
     @Test
     public void shouldReturnDoctorsBySpecAndFirstLetter() throws Exception {
-        doctorRepo.save(new Doctor(null, "Aaa", Arrays.asList("surgeon", "veterinarian")));
-        doctorRepo.save(new Doctor(null, "DAaa", Arrays.asList("geneticist", "veterinarian")));
-        doctorRepo.save(new Doctor(null, "bbb", Arrays.asList("geneticist")));
-        doctorRepo.save(new Doctor(null, "ccc", Arrays.asList("surgeon")));
-        doctorRepo.save(new Doctor(null, "aaa", Arrays.asList("veterinarian")));
-        doctorRepo.save(new Doctor(null, "AAA", Arrays.asList("surgeon", "geneticist")));
-        doctorRepo.save(new Doctor(null, "BB", Arrays.asList("geneticist", "surgeon")));
+        doctorRepo.save(new Doctor(null, "Aaa", List.of("surgeon", "veterinarian")));
+        doctorRepo.save(new Doctor(null, "DAaa", List.of("geneticist", "veterinarian")));
+        doctorRepo.save(new Doctor(null, "bbb", List.of("geneticist")));
+        doctorRepo.save(new Doctor(null, "ccc", List.of("surgeon")));
+        doctorRepo.save(new Doctor(null, "aaa", List.of("veterinarian")));
+        doctorRepo.save(new Doctor(null, "AAA", List.of("surgeon", "geneticist")));
+        doctorRepo.save(new Doctor(null, "BB", List.of("geneticist", "surgeon")));
 
         mockMvc.perform(get("/doctors").param("name", "A").param("specializations", "surgeon"))
                 .andExpect(status().isOk())
@@ -118,10 +119,10 @@ public class DoctorControllerTest {
 
     @Test
     public void shouldReturnDoctorsBySpecializations() throws Exception {
-        doctorRepo.save(new Doctor(null,"Aaa",Arrays.asList("veterinarian", "surgeon")));
-        doctorRepo.save(new Doctor(null,"BBB",Arrays.asList("geneticist")));
-        doctorRepo.save(new Doctor(null,"CCC",Arrays.asList("geneticist")));
-        doctorRepo.save(new Doctor(null,"DDD",Arrays.asList("surgeon", "veterinarian")));
+        doctorRepo.save(new Doctor(null,"Aaa",List.of("veterinarian", "surgeon")));
+        doctorRepo.save(new Doctor(null,"BBB",List.of("geneticist")));
+        doctorRepo.save(new Doctor(null,"CCC",List.of("geneticist")));
+        doctorRepo.save(new Doctor(null,"DDD",List.of("surgeon", "veterinarian")));
 
         mockMvc.perform(get("/doctors").param("specializations","surgeon","veterinarian"))
                 .andExpect(status().isOk())
@@ -173,7 +174,7 @@ public class DoctorControllerTest {
 
     @Test
     public void shouldDeleteDoctor() throws Exception {
-        Integer id = doctorRepo.save(new Doctor(null,"Aaa",Arrays.asList("veterinarian", "surgeon"))).getId();
+        Integer id = doctorRepo.save(new Doctor(null,"Aaa",List.of("veterinarian", "surgeon"))).getId();
 
         mockMvc.perform(delete("/doctors/{id}",id))
                 .andExpect(status().isNoContent());
