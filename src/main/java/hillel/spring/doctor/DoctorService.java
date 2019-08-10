@@ -11,20 +11,16 @@ import java.util.Optional;
 public class DoctorService {
     private final DoctorRepo doctorRepo;
 
-    public List<Doctor> findDoctors (Optional<String> specialization,
-                                     Optional<String> name,
+    public List<Doctor> findDoctors (Optional<String> name,
                                      Optional<List<String>> specializations){
-        if (specialization.isPresent() && name.isPresent()) {
-            return doctorRepo.findBySpecializationAndNameStartsWithIgnoreCase(specialization.get(), name.get());
-        }
-        if (specialization.isPresent()) {
-            return doctorRepo.findBySpecialization(specialization.get());
+        if (specializations.isPresent() && name.isPresent()) {
+            return doctorRepo.findDistinctBySpecializationsInAndNameStartsWithIgnoreCase(specializations.get(), name.get());
         }
         if (name.isPresent()) {
             return doctorRepo.findByNameStartsWithIgnoreCase(name.get());
         }
         if (specializations.isPresent()) {
-            return doctorRepo.findAllBySpecializationIn(specializations.get());
+            return doctorRepo.findDistinctBySpecializationsIn(specializations.get());
         }
         return doctorRepo.findAll();
     }

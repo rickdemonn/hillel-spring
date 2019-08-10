@@ -13,6 +13,9 @@ import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.List;
+
 
 import static org.assertj.core.api.Assertions.*;
 import static org.hamcrest.Matchers.*;
@@ -31,31 +34,33 @@ public class DoctorControllerTest {
     DoctorRepo doctorRepo;
 
     @After
-    public void cleanUp(){
+    public void cleanUp() {
         doctorRepo.deleteAll();
     }
 
 
     @Test
     public void findDoctorById() throws Exception {
-        Integer id = doctorRepo.save(new Doctor(null,"AiBolit","veterinarian")).getId();
+        Integer id = doctorRepo.save(new Doctor(null, "AiBolit", List.of("veterinarian", "surgeon"))).getId();
 
         mockMvc.perform(get("/doctors/{id}", id))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.specialization", is("veterinarian")))
+                .andExpect(jsonPath("$.specializations[0]", is("veterinarian")))
+                .andExpect(jsonPath("$.specializations[1]", is("surgeon")))
                 .andExpect(jsonPath("$.name", is("AiBolit")));
     }
 
     @Test
     public void shouldFindAllDoctors() throws Exception {
-        doctorRepo.save(new Doctor(null,"AiBolit","veterinarian"));
-        doctorRepo.save(new Doctor(null,"Dr. Chaos","surgeon"));
+        doctorRepo.save(new Doctor(null, "AiBolit", List.of("veterinarian")));
+        doctorRepo.save(new Doctor(null, "Dr. Chaos", List.of("veterinarian", "surgeon")));
 
         mockMvc.perform(get("/doctors"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].specialization", is("veterinarian")))
-                .andExpect(jsonPath("$[1].specialization", is("surgeon")))
+                .andExpect(jsonPath("$[0].specializations[0]", is("veterinarian")))
+                .andExpect(jsonPath("$[1].specializations[0]", is("veterinarian")))
+                .andExpect(jsonPath("$[1].specializations[1]", is("surgeon")))
                 .andExpect(jsonPath("$[0].name", is("AiBolit")))
                 .andExpect(jsonPath("$[1].name", is("Dr. Chaos")))
                 .andExpect(jsonPath("$[0].id", is(notNullValue())))
@@ -65,62 +70,65 @@ public class DoctorControllerTest {
 
     @Test
     public void shouldReturnSurgeon() throws Exception {
-        doctorRepo.save(new Doctor(null,"ccc","veterinarian"));
-        doctorRepo.save(new Doctor(null,"aaa","surgeon"));
-        doctorRepo.save(new Doctor(null,"bbb","surgeon"));
-        doctorRepo.save(new Doctor(null,"ccc","veterinarian"));
+        doctorRepo.save(new Doctor(null, "ccc", List.of("veterinarian", "surgeon")));
+        doctorRepo.save(new Doctor(null, "aaa", List.of("surgeon", "veterinarian")));
+        doctorRepo.save(new Doctor(null, "bbb", List.of("veterinarian", "geneticist")));
+        doctorRepo.save(new Doctor(null, "ccc", List.of("geneticist", "veterinarian")));
 
-        mockMvc.perform(get("/doctors").param("specialization", "surgeon"))
+        mockMvc.perform(get("/doctors").param("specializations", "surgeon"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$",hasSize(2)))
-                .andExpect(jsonPath("$[0].specialization", is("surgeon")))
-                .andExpect(jsonPath("$[1].specialization", is("surgeon")));
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].specializations[1]", is("surgeon")))
+                .andExpect(jsonPath("$[1].specializations[0]", is("surgeon")));
     }
 
     @Test
     public void shouldReturnDoctorsByFirstLetterOfName() throws Exception {
-        doctorRepo.save(new Doctor(null,"Aaa","surgeon"));
-        doctorRepo.save(new Doctor(null,"DAaa","surgeon"));
-        doctorRepo.save(new Doctor(null,"bbb","surgeon"));
-        doctorRepo.save(new Doctor(null,"ccc","surgeon"));
-        doctorRepo.save(new Doctor(null,"aaa","surgeon"));
+        doctorRepo.save(new Doctor(null, "Aaa", List.of("surgeon", "veterinarian")));
+        doctorRepo.save(new Doctor(null, "DAaa", List.of("surgeon", "veterinarian")));
+        doctorRepo.save(new Doctor(null, "bbb", List.of("surgeon", "veterinarian")));
+        doctorRepo.save(new Doctor(null, "ccc", List.of("surgeon", "veterinarian")));
+        doctorRepo.save(new Doctor(null, "aaa", List.of("surgeon", "veterinarian")));
 
-        mockMvc.perform(get("/doctors").param("name","A"))
+        mockMvc.perform(get("/doctors").param("name", "A"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$",hasSize(2)))
+                .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].name", is("Aaa")))
                 .andExpect(jsonPath("$[1].name", is("aaa")));
     }
 
     @Test
     public void shouldReturnDoctorsBySpecAndFirstLetter() throws Exception {
-        doctorRepo.save(new Doctor(null,"Aaa","surgeon"));
-        doctorRepo.save(new Doctor(null,"DAaa","surgeon"));
-        doctorRepo.save(new Doctor(null,"bbb","surgeon"));
-        doctorRepo.save(new Doctor(null,"ccc","surgeon"));
-        doctorRepo.save(new Doctor(null,"aaa","veterinarian"));
-        doctorRepo.save(new Doctor(null,"AAA","veterinarian"));
-        doctorRepo.save(new Doctor(null,"BB","veterinarian"));
+        doctorRepo.save(new Doctor(null, "Aaa", List.of("surgeon", "veterinarian")));
+        doctorRepo.save(new Doctor(null, "DAaa", List.of("geneticist", "veterinarian")));
+        doctorRepo.save(new Doctor(null, "bbb", List.of("geneticist")));
+        doctorRepo.save(new Doctor(null, "ccc", List.of("surgeon")));
+        doctorRepo.save(new Doctor(null, "aaa", List.of("veterinarian")));
+        doctorRepo.save(new Doctor(null, "AAA", List.of("surgeon", "geneticist")));
+        doctorRepo.save(new Doctor(null, "BB", List.of("geneticist", "surgeon")));
 
-        mockMvc.perform(get("/doctors").param("name","A").param("specialization", "surgeon"))
+        mockMvc.perform(get("/doctors").param("name", "A").param("specializations", "surgeon"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$",hasSize(1)))
+                .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].name", is("Aaa")))
-                .andExpect(jsonPath("$[0].specialization", is("surgeon")));
+                .andExpect(jsonPath("$[0].specializations[0]", is("surgeon")))
+                .andExpect(jsonPath("$[1].name", is("AAA")))
+                .andExpect(jsonPath("$[0].specializations[0]", is("surgeon")));
+        ;
     }
 
     @Test
     public void shouldReturnDoctorsBySpecializations() throws Exception {
-        doctorRepo.save(new Doctor(null,"Aaa","surgeon"));
-        doctorRepo.save(new Doctor(null,"BBB","veterinarian"));
-        doctorRepo.save(new Doctor(null,"CCC","geneticist"));
-        doctorRepo.save(new Doctor(null,"DDD","geneticist"));
+        doctorRepo.save(new Doctor(null,"Aaa",List.of("veterinarian", "surgeon")));
+        doctorRepo.save(new Doctor(null,"BBB",List.of("geneticist")));
+        doctorRepo.save(new Doctor(null,"CCC",List.of("geneticist")));
+        doctorRepo.save(new Doctor(null,"DDD",List.of("surgeon", "veterinarian")));
 
         mockMvc.perform(get("/doctors").param("specializations","surgeon","veterinarian"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$",hasSize(2)))
-                .andExpect(jsonPath("$[0].specialization", is("surgeon")))
-                .andExpect(jsonPath("$[1].specialization", is("veterinarian")));
+                .andExpect(jsonPath("$[0].specializations[1]", is("surgeon")))
+                .andExpect(jsonPath("$[1].specializations[1]", is("veterinarian")));
 
     }
 
@@ -147,7 +155,7 @@ public class DoctorControllerTest {
 
     @Test
     public void shouldUpdateDoctor() throws Exception {
-        Integer id = doctorRepo.save(new Doctor(null,"Aaa","surgeon")).getId();
+        Integer id = doctorRepo.save(new Doctor(null,"Aaa",Arrays.asList("veterinarian", "surgeon"))).getId();
 
         mockMvc.perform(put("/doctors/{id}",id).contentType("application/json")
                 .content(fromResource("DoctorRestAPI/update-doctor.json")))
@@ -166,7 +174,7 @@ public class DoctorControllerTest {
 
     @Test
     public void shouldDeleteDoctor() throws Exception {
-        Integer id = doctorRepo.save(new Doctor(null,"Aaa","surgeon")).getId();
+        Integer id = doctorRepo.save(new Doctor(null,"Aaa",List.of("veterinarian", "surgeon"))).getId();
 
         mockMvc.perform(delete("/doctors/{id}",id))
                 .andExpect(status().isNoContent());

@@ -1,6 +1,20 @@
 server.port: 8081
-doctor.hostname: localhost
-doctor.specializations.specializations:
-  - veterinarian
-  - surgeon
-  - geneticist
+server.address: localhost
+spring:
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: create
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
+logging:
+  level:
+    sql: debug
+doctor.specializations:
+    specializations:
+      - veterinarian
+      - surgeon
+      - geneticist

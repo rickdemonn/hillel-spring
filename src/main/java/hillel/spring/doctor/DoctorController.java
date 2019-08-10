@@ -4,12 +4,9 @@ package hillel.spring.doctor;
 import hillel.spring.doctor.dto.DoctorDtoConverter;
 import hillel.spring.doctor.dto.DoctorInputDto;
 import hillel.spring.doctor.dto.DoctorOutputDto;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,17 +20,18 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 
 @RestController
+@Slf4j
 public class DoctorController {
     private final DoctorService doctorService;
     private final DoctorDtoConverter doctorDtoConverter;
     private final SpecializationsConfig specializationsConfig;
     private final UriComponentsBuilder uriComponentsBuilder;
-    private final Logger logger = LoggerFactory.getLogger(DoctorController.class);
+
 
     public DoctorController(DoctorService doctorService,
                             DoctorDtoConverter doctorDtoConverter,
                             SpecializationsConfig specializationsConfig,
-                            @Value("${doctor.hostname:localhost}") String hostname) {
+                            @Value("${server.address:localhost}") String hostname) {
         this.doctorService = doctorService;
         this.doctorDtoConverter = doctorDtoConverter;
         this.specializationsConfig = specializationsConfig;
@@ -45,11 +43,10 @@ public class DoctorController {
     }
 
     @GetMapping("/doctors")
-    public List<DoctorOutputDto> findDoctors(@RequestParam Optional<String> specialization,
-                                             @RequestParam Optional<String> name,
+    public List<DoctorOutputDto> findDoctors(@RequestParam Optional<String> name,
                                              @RequestParam Optional<List<String>> specializations) {
 
-        return doctorService.findDoctors(specialization, name, specializations).stream()
+        return doctorService.findDoctors(name, specializations).stream()
                 .map(doctorDtoConverter::toDto)
                 .collect(Collectors.toList());
     }
@@ -57,7 +54,6 @@ public class DoctorController {
     @GetMapping("/doctors/{id}")
     public DoctorOutputDto findDoctorByID(@PathVariable Integer id) {
         val mayBeDoctor = doctorService.findDoctorByID(id);
-
         return doctorDtoConverter.toDto(mayBeDoctor.orElseThrow(DoctorNotFoundException::new));
     }
 
@@ -65,11 +61,11 @@ public class DoctorController {
     public ResponseEntity<?> createDoctor(@RequestBody DoctorInputDto docDto) {
         val doctor = doctorDtoConverter.toModel(docDto);
 
-        if (checkSpecialization(doctor)) {
+        if (checkSpecializations(doctor)) {
             val newDoc = doctorService.createDoctor(doctor);
             return ResponseEntity.created(uriComponentsBuilder.build(newDoc.getId())).build();
-        } else{
-            logger.error("Choice specialization: " + doctor.getSpecialization()
+        } else {
+            log.error("Choice specialization: " + doctor.getSpecializations()
                     + " Allow specializations: " + specializationsConfig.getSpecializations().toString());
             throw new WrongSpecializationsException();
         }
@@ -81,12 +77,11 @@ public class DoctorController {
                              @RequestBody DoctorInputDto docDto) {
 
         doctorService.findDoctorByID(id).orElseThrow(DoctorNotFoundException::new);
-        final val doctor = doctorDtoConverter.toModel(docDto);
-        doctor.setId(id);
-        if (checkSpecialization(doctor)) {
+        val doctor = doctorDtoConverter.toModel(docDto, id);
+        if (checkSpecializations(doctor)) {
             doctorService.upDateDoctor(doctor);
         } else {
-            logger.error("Choice specialization: " + doctor.getSpecialization()
+            log.error("Choice specialization: " + doctor.getSpecializations()
                     + " Allow specializations: " + specializationsConfig.getSpecializations().toString());
             throw new WrongSpecializationsException();
         }
@@ -101,8 +96,8 @@ public class DoctorController {
         doctorService.deleteDoctor(id);
     }
 
-    private boolean checkSpecialization(Doctor doctor) {
-        return specializationsConfig.getSpecializations().stream()
-                .anyMatch(spc -> spc.equals(doctor.getSpecialization()));
+    private boolean checkSpecializations(Doctor doctor) {
+        return doctor.getSpecializations().stream()
+                .allMatch(doc -> specializationsConfig.getSpecializations().stream().anyMatch(doc::equals));
     }
 }
