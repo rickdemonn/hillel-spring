@@ -2,11 +2,13 @@
   {
     "id": 1,
     "name": "Abb",
+    "isSick": false,
     "specialization": "surgeon"
   },
   {
     "id": 4,
     "name": "AAA",
+    "isSick": false,
     "specialization": "surgeon"
   }
 ]

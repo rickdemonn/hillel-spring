@@ -1,5 +1,6 @@
 {
   "id": 1,
   "name": "Aaa",
+  "isSick": false,
   "specialization": "surgeon"
 }

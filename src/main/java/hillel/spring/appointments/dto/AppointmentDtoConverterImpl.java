@@ -3,11 +3,16 @@ package hillel.spring.appointments.dto;
 import hillel.spring.appointments.Appointment;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.processing.Generated;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
-
+@Generated(
+    value = "org.mapstruct.ap.MappingProcessor",
+    date = "2019-08-20T16:29:40+0300",
+    comments = "version: 1.3.0.Final, compiler: javac, environment: Java 12.0.2 (Oracle Corporation)"
+)
 @Component
 public class AppointmentDtoConverterImpl implements AppointmentDtoConverter {
 

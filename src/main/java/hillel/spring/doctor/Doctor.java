@@ -1,5 +1,6 @@
 package hillel.spring.doctor;
 
+import hillel.spring.BooleanToStringConverter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,9 +15,11 @@ import java.util.List;
 @Entity
 public class Doctor {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
+    @Convert(converter = BooleanToStringConverter.class)
+    private Boolean isSick;
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> specializations;
 }

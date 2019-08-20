@@ -8,5 +8,6 @@ import java.util.List;
 @Data
 public class DoctorInputDto {
     private String name;
+    private Boolean isSick;
     private List<String> specializations;
 }

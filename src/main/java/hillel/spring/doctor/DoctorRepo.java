@@ -10,7 +10,7 @@ import java.util.List;
 public interface DoctorRepo extends JpaRepository<Doctor, Integer> {
 
     List<Doctor> findDistinctBySpecializationsInAndNameStartsWithIgnoreCase(@Param("specializations") List<String> specializations,
-                                                                       @Param("name") String name);
+                                                                            @Param("name") String name);
 
     List<Doctor> findByNameStartsWithIgnoreCase(@Param("name") String name);
 

@@ -1,4 +1,5 @@
 {
   "name": "Zlo",
+  "isSick": false,
   "specializations": ["surgeon","geneticist"]
 }
