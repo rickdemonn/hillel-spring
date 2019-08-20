@@ -1,5 +1,6 @@
 package hillel.spring.doctor;
 
+import hillel.spring.TestRunner;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.ResourceUtils;
@@ -23,8 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
-@AutoConfigureMockMvc
+@TestRunner
 public class DoctorControllerTest {
 
     @Autowired
@@ -41,7 +42,7 @@ public class DoctorControllerTest {
 
     @Test
     public void findDoctorById() throws Exception {
-        Integer id = doctorRepo.save(new Doctor(null, "AiBolit", List.of("veterinarian", "surgeon"))).getId();
+        Integer id = doctorRepo.save(new Doctor(null, "AiBolit",false, List.of("veterinarian", "surgeon"))).getId();
 
         mockMvc.perform(get("/doctors/{id}", id))
                 .andExpect(status().isOk())
@@ -52,8 +53,8 @@ public class DoctorControllerTest {
 
     @Test
     public void shouldFindAllDoctors() throws Exception {
-        doctorRepo.save(new Doctor(null, "AiBolit", List.of("veterinarian")));
-        doctorRepo.save(new Doctor(null, "Dr. Chaos", List.of("veterinarian", "surgeon")));
+        doctorRepo.save(new Doctor(null, "AiBolit",false, List.of("veterinarian")));
+        doctorRepo.save(new Doctor(null, "Dr. Chaos",false, List.of("veterinarian", "surgeon")));
 
         mockMvc.perform(get("/doctors"))
                 .andExpect(status().isOk())
@@ -70,10 +71,10 @@ public class DoctorControllerTest {
 
     @Test
     public void shouldReturnSurgeon() throws Exception {
-        doctorRepo.save(new Doctor(null, "ccc", List.of("veterinarian", "surgeon")));
-        doctorRepo.save(new Doctor(null, "aaa", List.of("surgeon", "veterinarian")));
-        doctorRepo.save(new Doctor(null, "bbb", List.of("veterinarian", "geneticist")));
-        doctorRepo.save(new Doctor(null, "ccc", List.of("geneticist", "veterinarian")));
+        doctorRepo.save(new Doctor(null, "ccc",false, List.of("veterinarian", "surgeon")));
+        doctorRepo.save(new Doctor(null, "aaa",false, List.of("surgeon", "veterinarian")));
+        doctorRepo.save(new Doctor(null, "bbb",false, List.of("veterinarian", "geneticist")));
+        doctorRepo.save(new Doctor(null, "ccc",false, List.of("geneticist", "veterinarian")));
 
         mockMvc.perform(get("/doctors").param("specializations", "surgeon"))
                 .andExpect(status().isOk())
@@ -84,11 +85,11 @@ public class DoctorControllerTest {
 
     @Test
     public void shouldReturnDoctorsByFirstLetterOfName() throws Exception {
-        doctorRepo.save(new Doctor(null, "Aaa", List.of("surgeon", "veterinarian")));
-        doctorRepo.save(new Doctor(null, "DAaa", List.of("surgeon", "veterinarian")));
-        doctorRepo.save(new Doctor(null, "bbb", List.of("surgeon", "veterinarian")));
-        doctorRepo.save(new Doctor(null, "ccc", List.of("surgeon", "veterinarian")));
-        doctorRepo.save(new Doctor(null, "aaa", List.of("surgeon", "veterinarian")));
+        doctorRepo.save(new Doctor(null, "Aaa",false, List.of("surgeon", "veterinarian")));
+        doctorRepo.save(new Doctor(null, "DAaa",false, List.of("surgeon", "veterinarian")));
+        doctorRepo.save(new Doctor(null, "bbb",false, List.of("surgeon", "veterinarian")));
+        doctorRepo.save(new Doctor(null, "ccc",false, List.of("surgeon", "veterinarian")));
+        doctorRepo.save(new Doctor(null, "aaa",false, List.of("surgeon", "veterinarian")));
 
         mockMvc.perform(get("/doctors").param("name", "A"))
                 .andExpect(status().isOk())
@@ -99,13 +100,13 @@ public class DoctorControllerTest {
 
     @Test
     public void shouldReturnDoctorsBySpecAndFirstLetter() throws Exception {
-        doctorRepo.save(new Doctor(null, "Aaa", List.of("surgeon", "veterinarian")));
-        doctorRepo.save(new Doctor(null, "DAaa", List.of("geneticist", "veterinarian")));
-        doctorRepo.save(new Doctor(null, "bbb", List.of("geneticist")));
-        doctorRepo.save(new Doctor(null, "ccc", List.of("surgeon")));
-        doctorRepo.save(new Doctor(null, "aaa", List.of("veterinarian")));
-        doctorRepo.save(new Doctor(null, "AAA", List.of("surgeon", "geneticist")));
-        doctorRepo.save(new Doctor(null, "BB", List.of("geneticist", "surgeon")));
+        doctorRepo.save(new Doctor(null, "Aaa",false, List.of("surgeon", "veterinarian")));
+        doctorRepo.save(new Doctor(null, "DAaa",false, List.of("geneticist", "veterinarian")));
+        doctorRepo.save(new Doctor(null, "bbb",false, List.of("geneticist")));
+        doctorRepo.save(new Doctor(null, "ccc",false, List.of("surgeon")));
+        doctorRepo.save(new Doctor(null, "aaa",false, List.of("veterinarian")));
+        doctorRepo.save(new Doctor(null, "AAA",false, List.of("surgeon", "geneticist")));
+        doctorRepo.save(new Doctor(null, "BB",false, List.of("geneticist", "surgeon")));
 
         mockMvc.perform(get("/doctors").param("name", "A").param("specializations", "surgeon"))
                 .andExpect(status().isOk())
@@ -119,10 +120,10 @@ public class DoctorControllerTest {
 
     @Test
     public void shouldReturnDoctorsBySpecializations() throws Exception {
-        doctorRepo.save(new Doctor(null,"Aaa",List.of("veterinarian", "surgeon")));
-        doctorRepo.save(new Doctor(null,"BBB",List.of("geneticist")));
-        doctorRepo.save(new Doctor(null,"CCC",List.of("geneticist")));
-        doctorRepo.save(new Doctor(null,"DDD",List.of("surgeon", "veterinarian")));
+        doctorRepo.save(new Doctor(null,"Aaa",false, List.of("veterinarian", "surgeon")));
+        doctorRepo.save(new Doctor(null,"BBB",false, List.of("geneticist")));
+        doctorRepo.save(new Doctor(null,"CCC",false, List.of("geneticist")));
+        doctorRepo.save(new Doctor(null,"DDD",false, List.of("surgeon", "veterinarian")));
 
         mockMvc.perform(get("/doctors").param("specializations","surgeon","veterinarian"))
                 .andExpect(status().isOk())
@@ -155,7 +156,7 @@ public class DoctorControllerTest {
 
     @Test
     public void shouldUpdateDoctor() throws Exception {
-        Integer id = doctorRepo.save(new Doctor(null,"Aaa",Arrays.asList("veterinarian", "surgeon"))).getId();
+        Integer id = doctorRepo.save(new Doctor(null,"Aaa",false, List.of("veterinarian", "surgeon"))).getId();
 
         mockMvc.perform(put("/doctors/{id}",id).contentType("application/json")
                 .content(fromResource("DoctorRestAPI/update-doctor.json")))
@@ -174,7 +175,7 @@ public class DoctorControllerTest {
 
     @Test
     public void shouldDeleteDoctor() throws Exception {
-        Integer id = doctorRepo.save(new Doctor(null,"Aaa",List.of("veterinarian", "surgeon"))).getId();
+        Integer id = doctorRepo.save(new Doctor(null,"Aaa",false, List.of("veterinarian", "surgeon"))).getId();
 
         mockMvc.perform(delete("/doctors/{id}",id))
                 .andExpect(status().isNoContent());

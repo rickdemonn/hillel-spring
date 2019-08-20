@@ -1,6 +1,7 @@
 package hillel.spring.appointments;
 
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class AppointmentService {
     private final AppointmentRepo appointmentRepo;
-    private final Logger logger = LoggerFactory.getLogger(AppointmentService.class);
 
     public Map<Integer, Integer> getScheduleOfDoctor(Integer docId, LocalDate date) {
         return appointmentRepo.findByDocIdAndLocalDate(docId, date).stream()
@@ -27,6 +27,10 @@ public class AppointmentService {
     }
 
     public List<Appointment> findAll() {
-       return appointmentRepo.findAll();
+        return appointmentRepo.findAll();
+    }
+
+    public void reWriteSchedulesOfDoctors(LocalDate date, Integer sickDocId, Integer docId) {
+        appointmentRepo.reWriteSchedulesOfDoctors(date, sickDocId, docId);
     }
 }

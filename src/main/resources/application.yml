@@ -2,9 +2,13 @@ server.port: 8081
 server.address: localhost
 spring:
   jpa:
+    properties:
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
     open-in-view: false
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
@@ -18,3 +22,4 @@ doctor.specializations:
       - veterinarian
       - surgeon
       - geneticist
+
