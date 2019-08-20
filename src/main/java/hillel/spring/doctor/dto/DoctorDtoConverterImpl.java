@@ -3,9 +3,10 @@ package hillel.spring.doctor.dto;
 import hillel.spring.doctor.Doctor;
 import org.springframework.stereotype.Component;
 
-
+import javax.annotation.processing.Generated;
 import java.util.ArrayList;
 import java.util.List;
+
 
 @Component
 public class DoctorDtoConverterImpl implements DoctorDtoConverter {
@@ -19,6 +20,7 @@ public class DoctorDtoConverterImpl implements DoctorDtoConverter {
         Doctor doctor = new Doctor();
 
         doctor.setName( dto.getName() );
+        doctor.setIsSick( dto.getIsSick() );
         List<String> list = dto.getSpecializations();
         if ( list != null ) {
             doctor.setSpecializations( new ArrayList<String>( list ) );
@@ -37,6 +39,7 @@ public class DoctorDtoConverterImpl implements DoctorDtoConverter {
 
         if ( dto != null ) {
             doctor.setName( dto.getName() );
+            doctor.setIsSick( dto.getIsSick() );
             List<String> list = dto.getSpecializations();
             if ( list != null ) {
                 doctor.setSpecializations( new ArrayList<String>( list ) );
@@ -59,6 +62,7 @@ public class DoctorDtoConverterImpl implements DoctorDtoConverter {
 
         doctorOutputDto.setId( doc.getId() );
         doctorOutputDto.setName( doc.getName() );
+        doctorOutputDto.setIsSick( doc.getIsSick() );
         List<String> list = doc.getSpecializations();
         if ( list != null ) {
             doctorOutputDto.setSpecializations( new ArrayList<String>( list ) );

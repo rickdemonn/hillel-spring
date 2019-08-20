@@ -8,5 +8,6 @@ import java.util.List;
 public class DoctorOutputDto {
     private Integer id;
     private String name;
+    private Boolean isSick;
     private List<String> specializations;
 }
