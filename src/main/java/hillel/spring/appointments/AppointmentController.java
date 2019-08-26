@@ -9,6 +9,7 @@ import hillel.spring.pet.PetService;
 import hillel.spring.pet.dto.PetNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.hibernate.StaleObjectStateException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -78,7 +79,9 @@ public class AppointmentController {
         }
 
         if (busyHour >= 8 && busyHour <= 17) {
-            appointmentService.makeAPetAppointment(appointmentDtoConverter.toModel(dto, docId, date, busyHour));
+            val appointment = appointmentDtoConverter.toModel(dto, docId, date, busyHour);
+            appointmentDtoConverter.updateModel(appointment, dto ,docId, date, busyHour);
+            appointmentService.makeAPetAppointment(appointment);
         } else {
             log.error("you chose the time to record: " + busyHour + " , Working hours must be between 8 and 17");
             throw new NotWorkingTimeException(busyHour);
