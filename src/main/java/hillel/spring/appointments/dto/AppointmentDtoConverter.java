@@ -9,15 +9,15 @@ import java.time.LocalDate;
 
 import java.util.Map;
 
-@Mapper
+//@Mapper
 public interface AppointmentDtoConverter {
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "version", ignore = true)
+//    @Mapping(target = "id", ignore = true)
+//    @Mapping(target = "version", ignore = true)
     Appointment toModel(AppointmentInputDto dto, Integer docId, LocalDate localDate, Integer busyHour);
     AppointmentOutputDto toDto(Map<Integer, Integer> hourToPetId);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "version", ignore = true)
+//    @Mapping(target = "id", ignore = true)
+//    @Mapping(target = "version", ignore = true)
     void updateModel(@MappingTarget Appointment appointment, AppointmentInputDto dto, Integer docId, LocalDate localDate, Integer busyHour);
 }
 

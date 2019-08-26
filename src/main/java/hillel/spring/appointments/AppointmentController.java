@@ -80,7 +80,6 @@ public class AppointmentController {
 
         if (busyHour >= 8 && busyHour <= 17) {
             val appointment = appointmentDtoConverter.toModel(dto, docId, date, busyHour);
-            appointmentDtoConverter.updateModel(appointment, dto ,docId, date, busyHour);
             appointmentService.makeAPetAppointment(appointment);
         } else {
             log.error("you chose the time to record: " + busyHour + " , Working hours must be between 8 and 17");
