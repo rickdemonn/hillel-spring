@@ -37,7 +37,7 @@ public class SickDoctorController {
         val mayBeDoctor = doctorService.findDoctorByID(docId).orElseThrow(DoctorNotFoundException::new);
 
         if(sickDocId.equals(docId)) {
-            log.error("Hey you trying rewrite schedule one and the same doctor, you choose id's: " + sickDocId + "" +
+            log.error("there was an attempt to rewrite the same doctor. Id's: " + sickDocId + "" +
                     " and "+ docId);
             throw new DoctorsIdsIsEqualException();
         }
