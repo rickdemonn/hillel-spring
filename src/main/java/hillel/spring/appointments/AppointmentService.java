@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-@Retryable(StaleObjectStateException.class)
 public class AppointmentService {
     private final AppointmentRepo appointmentRepo;
 
@@ -36,7 +35,7 @@ public class AppointmentService {
     public List<Appointment> findByDocIdAndLocalDate(Integer sickDocId, LocalDate date) {
         return appointmentRepo.findByDocIdAndLocalDate(sickDocId,date);
     }
-
+    @Retryable(StaleObjectStateException.class)
     public void saveAppointments(List<Appointment> appointmentOfSickDoc) {
         appointmentOfSickDoc.forEach(appointmentRepo::save);
     }
