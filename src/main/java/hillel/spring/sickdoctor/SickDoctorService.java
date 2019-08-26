@@ -5,6 +5,7 @@ import hillel.spring.appointments.AppointmentRepo;
 import hillel.spring.appointments.AppointmentService;
 import hillel.spring.appointments.DoctorBusyException;
 import lombok.AllArgsConstructor;
+import lombok.val;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -20,7 +21,12 @@ public class SickDoctorService {
 
     @Transactional
     public Map<Integer, Integer> reWriteSchedulesOfDoctors(LocalDate date, Integer sickDocId, Integer docId){
-        appointmentService.reWriteSchedulesOfDoctors(date, sickDocId, docId);
+        val appointmentOfSickDoc = appointmentService.findByDocIdAndLocalDate(sickDocId,date);
+
+        appointmentOfSickDoc.forEach(a -> a.setDocId(docId));
+
+        appointmentService.saveAppointments(appointmentOfSickDoc);
+
         return appointmentService.getScheduleOfDoctor(docId, date);
     }
 }

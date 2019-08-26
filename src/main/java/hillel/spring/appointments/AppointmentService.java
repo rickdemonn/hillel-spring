@@ -2,8 +2,10 @@ package hillel.spring.appointments;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.hibernate.StaleObjectStateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -14,6 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Retryable(StaleObjectStateException.class)
 public class AppointmentService {
     private final AppointmentRepo appointmentRepo;
 
@@ -30,7 +33,11 @@ public class AppointmentService {
         return appointmentRepo.findAll();
     }
 
-    public void reWriteSchedulesOfDoctors(LocalDate date, Integer sickDocId, Integer docId) {
-        appointmentRepo.reWriteSchedulesOfDoctors(date, sickDocId, docId);
+    public List<Appointment> findByDocIdAndLocalDate(Integer sickDocId, LocalDate date) {
+        return appointmentRepo.findByDocIdAndLocalDate(sickDocId,date);
+    }
+
+    public void saveAppointments(List<Appointment> appointmentOfSickDoc) {
+        appointmentOfSickDoc.forEach(appointmentRepo::save);
     }
 }

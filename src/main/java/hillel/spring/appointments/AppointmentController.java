@@ -62,7 +62,6 @@ public class AppointmentController {
 
     @PostMapping("/doctors/{docId}/schedule/{date}/{busyHour}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Retryable(StaleObjectStateException.class)
     public void makeAPetAppointment(@PathVariable Integer docId,
                                     @PathVariable @DateTimeFormat(iso = ISO.DATE) LocalDate date,
                                     @PathVariable Integer busyHour,

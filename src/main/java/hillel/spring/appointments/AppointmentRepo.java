@@ -11,10 +11,4 @@ import java.util.List;
 public interface AppointmentRepo extends JpaRepository<Appointment, Integer> {
 
     List<Appointment> findByDocIdAndLocalDate(Integer docId, LocalDate date);
-
-    @Modifying
-    @Query("UPDATE Appointment SET docId = :docId WHERE docId = :sickDocId and localDate = :date")
-    void reWriteSchedulesOfDoctors(@Param("date") LocalDate date,
-                                   @Param("sickDocId") Integer sickDocId,
-                                   @Param("docId") Integer docId);
 }
