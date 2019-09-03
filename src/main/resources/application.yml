@@ -22,4 +22,11 @@ doctor.specializations:
       - veterinarian
       - surgeon
       - geneticist
-
+review:
+  config:
+    allow-list:
+      - "*"
+      - "**"
+      - "***"
+      - "****"
+      - "*****"

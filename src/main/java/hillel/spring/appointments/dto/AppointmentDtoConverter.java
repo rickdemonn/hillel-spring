@@ -20,4 +20,3 @@ public interface AppointmentDtoConverter {
 //    @Mapping(target = "version", ignore = true)
     void updateModel(@MappingTarget Appointment appointment, AppointmentInputDto dto, Integer docId, LocalDate localDate, Integer busyHour);
 }
-
