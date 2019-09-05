@@ -58,14 +58,13 @@ public class DoctorControllerTest {
 
         mockMvc.perform(get("/doctors"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].specializations[0]", is("veterinarian")))
-                .andExpect(jsonPath("$[1].specializations[0]", is("veterinarian")))
-                .andExpect(jsonPath("$[1].specializations[1]", is("surgeon")))
-                .andExpect(jsonPath("$[0].name", is("AiBolit")))
-                .andExpect(jsonPath("$[1].name", is("Dr. Chaos")))
-                .andExpect(jsonPath("$[0].id", is(notNullValue())))
-                .andExpect(jsonPath("$[1].id", is(notNullValue())));
+                .andExpect(jsonPath("$.content[0].specializations[0]", is("veterinarian")))
+                .andExpect(jsonPath("$.content[1].specializations[0]", is("veterinarian")))
+                .andExpect(jsonPath("$.content[1].specializations[1]", is("surgeon")))
+                .andExpect(jsonPath("$.content[0].name", is("AiBolit")))
+                .andExpect(jsonPath("$.content[1].name", is("Dr. Chaos")))
+                .andExpect(jsonPath("$.content[0].id", is(notNullValue())))
+                .andExpect(jsonPath("$.content[1].id", is(notNullValue())));
 
     }
 
@@ -78,9 +77,7 @@ public class DoctorControllerTest {
 
         mockMvc.perform(get("/doctors").param("specializations", "surgeon"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].specializations[1]", is("surgeon")))
-                .andExpect(jsonPath("$[1].specializations[0]", is("surgeon")));
+                .andExpect(jsonPath("$.content[0].specializations[1]", is("surgeon")));
     }
 
     @Test
@@ -93,9 +90,8 @@ public class DoctorControllerTest {
 
         mockMvc.perform(get("/doctors").param("name", "A"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].name", is("Aaa")))
-                .andExpect(jsonPath("$[1].name", is("aaa")));
+                .andExpect(jsonPath("$.content[0].name", is("Aaa")))
+                .andExpect(jsonPath("$.content[1].name", is("aaa")));
     }
 
     @Test
@@ -110,11 +106,10 @@ public class DoctorControllerTest {
 
         mockMvc.perform(get("/doctors").param("name", "A").param("specializations", "surgeon"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].name", is("Aaa")))
-                .andExpect(jsonPath("$[0].specializations[0]", is("surgeon")))
-                .andExpect(jsonPath("$[1].name", is("AAA")))
-                .andExpect(jsonPath("$[0].specializations[0]", is("surgeon")));
+                .andExpect(jsonPath("$.content[0].name", is("Aaa")))
+                .andExpect(jsonPath("$.content[0].specializations[0]", is("surgeon")))
+                .andExpect(jsonPath("$.content[1].name", is("AAA")))
+                .andExpect(jsonPath("$.content[0].specializations[0]", is("surgeon")));
         ;
     }
 
@@ -127,9 +122,8 @@ public class DoctorControllerTest {
 
         mockMvc.perform(get("/doctors").param("specializations","surgeon","veterinarian"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$",hasSize(2)))
-                .andExpect(jsonPath("$[0].specializations[1]", is("surgeon")))
-                .andExpect(jsonPath("$[1].specializations[1]", is("veterinarian")));
+                .andExpect(jsonPath("$.content[0].specializations[1]", is("surgeon")))
+                .andExpect(jsonPath("$.content[1].specializations[1]", is("veterinarian")));
 
     }
 
