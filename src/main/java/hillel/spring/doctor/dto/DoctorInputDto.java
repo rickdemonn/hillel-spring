@@ -15,5 +15,6 @@ public class DoctorInputDto {
     private String name;
     @NotNull
     private Boolean isSick;
-    private List<@Size(min = 1) @AllowSpecializations(message = "{allow.specializations}") String> specializations;
+    @Size(min = 1)
+    private List<@AllowSpecializations(message = "{allow.specializations}") String> specializations;
 }
