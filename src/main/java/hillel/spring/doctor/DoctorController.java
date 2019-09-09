@@ -8,10 +8,13 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -43,12 +46,12 @@ public class DoctorController {
     }
 
     @GetMapping("/doctors")
-    public List<DoctorOutputDto> findDoctors(@RequestParam Optional<String> name,
-                                             @RequestParam Optional<List<String>> specializations) {
+    public Page<DoctorOutputDto> findDoctors(@RequestParam Optional<String> name,
+                                             @RequestParam Optional<List<String>> specializations,
+                                             Pageable pageable) {
 
-        return doctorService.findDoctors(name, specializations).stream()
-                .map(doctorDtoConverter::toDto)
-                .collect(Collectors.toList());
+        return doctorService.findDoctors(name, specializations, pageable).map(doctorDtoConverter::toDto);
+
     }
 
     @GetMapping("/doctors/{id}")
@@ -58,33 +61,23 @@ public class DoctorController {
     }
 
     @PostMapping("/doctors")
-    public ResponseEntity<?> createDoctor(@RequestBody DoctorInputDto docDto) {
+    public ResponseEntity<?> createDoctor(@Valid @RequestBody DoctorInputDto docDto) {
         val doctor = doctorDtoConverter.toModel(docDto);
 
-        if (checkSpecializations(doctor)) {
-            val newDoc = doctorService.createDoctor(doctor);
-            return ResponseEntity.created(uriComponentsBuilder.build(newDoc.getId())).build();
-        } else {
-            log.error("Choice specialization: " + doctor.getSpecializations()
-                    + " Allow specializations: " + specializationsConfig.getSpecializations().toString());
-            throw new WrongSpecializationsException();
-        }
+        val newDoc = doctorService.createDoctor(doctor);
+        return ResponseEntity.created(uriComponentsBuilder.build(newDoc.getId())).build();
+
     }
 
     @PutMapping("/doctors/{id}")
     @ResponseStatus(NO_CONTENT)
     public void upDateDoctor(@PathVariable Integer id,
-                             @RequestBody DoctorInputDto docDto) {
+                             @Valid @RequestBody DoctorInputDto docDto) {
 
         doctorService.findDoctorByID(id).orElseThrow(DoctorNotFoundException::new);
         val doctor = doctorDtoConverter.toModel(docDto, id);
-        if (checkSpecializations(doctor)) {
-            doctorService.upDateDoctor(doctor);
-        } else {
-            log.error("Choice specialization: " + doctor.getSpecializations()
-                    + " Allow specializations: " + specializationsConfig.getSpecializations().toString());
-            throw new WrongSpecializationsException();
-        }
+
+        doctorService.upDateDoctor(doctor);
     }
 
     @DeleteMapping("/doctors/{id}")
@@ -96,8 +89,4 @@ public class DoctorController {
         doctorService.deleteDoctor(id);
     }
 
-    private boolean checkSpecializations(Doctor doctor) {
-        return doctor.getSpecializations().stream()
-                .allMatch(doc -> specializationsConfig.getSpecializations().stream().anyMatch(doc::equals));
-    }
 }

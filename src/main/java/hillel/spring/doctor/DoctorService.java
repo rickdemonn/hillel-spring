@@ -1,6 +1,8 @@
 package hillel.spring.doctor;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,18 +13,19 @@ import java.util.Optional;
 public class DoctorService {
     private final DoctorRepo doctorRepo;
 
-    public List<Doctor> findDoctors (Optional<String> name,
-                                     Optional<List<String>> specializations){
+    public Page<Doctor> findDoctors (Optional<String> name,
+                                     Optional<List<String>> specializations,
+                                     Pageable pageable){
         if (specializations.isPresent() && name.isPresent()) {
-            return doctorRepo.findDistinctBySpecializationsInAndNameStartsWithIgnoreCase(specializations.get(), name.get());
+            return doctorRepo.findDistinctBySpecializationsInAndNameStartsWithIgnoreCase(specializations.get(), name.get(), pageable);
         }
         if (name.isPresent()) {
-            return doctorRepo.findByNameStartsWithIgnoreCase(name.get());
+            return doctorRepo.findByNameStartsWithIgnoreCase(name.get(), pageable);
         }
         if (specializations.isPresent()) {
-            return doctorRepo.findDistinctBySpecializationsIn(specializations.get());
+            return doctorRepo.findDistinctBySpecializationsIn(specializations.get(), pageable);
         }
-        return doctorRepo.findAll();
+        return doctorRepo.findAll(pageable);
     }
 
     public Doctor createDoctor(Doctor doctor) {
