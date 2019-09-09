@@ -5,32 +5,45 @@ import java.util.Optional;
 
 import lombok.Data;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+
 @Data
 public class ReviewInputDto {
-    private String service;
-    private String equipment;
-    private String specialistQualification;
-    private String effectivenessOfTheTreatment;
-    private String overallRating;
+    @Min(1)
+    @Max(5)
+    private Integer service;
+    @Min(1)
+    @Max(5)
+    private Integer equipment;
+    @Min(1)
+    @Max(5)
+    private Integer specialistQualification;
+    @Min(1)
+    @Max(5)
+    private Integer effectivenessOfTheTreatment;
+    @Min(1)
+    @Max(5)
+    private Integer overallRating;
     private String comment;
 
-    public Optional<String> getService() {
+    public Optional<Integer> getService() {
         return Optional.ofNullable(service);
     }
 
-    public Optional<String> getEquipment() {
+    public Optional<Integer> getEquipment() {
         return Optional.ofNullable(equipment);
     }
 
-    public Optional<String> getSpecialistQualification() {
+    public Optional<Integer> getSpecialistQualification() {
         return Optional.ofNullable(specialistQualification);
     }
 
-    public Optional<String> getEffectivenessOfTheTreatment() {
+    public Optional<Integer> getEffectivenessOfTheTreatment() {
         return Optional.ofNullable(effectivenessOfTheTreatment);
     }
 
-    public Optional<String> getOverallRating() {
+    public Optional<Integer> getOverallRating() {
         return Optional.ofNullable(overallRating);
     }
 

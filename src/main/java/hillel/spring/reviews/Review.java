@@ -19,31 +19,31 @@ public class Review {
     @Version
     private Integer version;
     private Integer petId;
-    private String service;
-    private String equipment;
-    private String specialistQualification;
-    private String effectivenessOfTheTreatment;
-    private String overallRating;
+    private Integer service;
+    private Integer equipment;
+    private Integer specialistQualification;
+    private Integer effectivenessOfTheTreatment;
+    private Integer overallRating;
     private String comment;
     private LocalDateTime date;
 
-    public Optional<String> getService() {
+    public Optional<Integer> getService() {
         return Optional.ofNullable(service);
     }
 
-    public Optional<String> getEquipment() {
+    public Optional<Integer> getEquipment() {
         return Optional.ofNullable(equipment);
     }
 
-    public Optional<String> getSpecialistQualification() {
+    public Optional<Integer> getSpecialistQualification() {
         return Optional.ofNullable(specialistQualification);
     }
 
-    public Optional<String> getEffectivenessOfTheTreatment() {
+    public Optional<Integer> getEffectivenessOfTheTreatment() {
         return Optional.ofNullable(effectivenessOfTheTreatment);
     }
 
-    public Optional<String> getOverallRating() {
+    public Optional<Integer> getOverallRating() {
         return Optional.ofNullable(overallRating);
     }
 

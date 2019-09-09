@@ -101,18 +101,18 @@ public class ReviewControllerTest {
     @Test
     public void shouldBeGetReviewReport() throws Exception{
         reviewRepo.save(new Review(null,1, 1,
-                "**",
-                "**",
-                "***",
-                "***",
+                2,
+                2,
+                2,
+                3,
                 null,
                 "Hello", LocalDateTime.parse("2019-01-01T12:00")));
         reviewRepo.save(new Review(null,1, 1,
-                "****",
-                "****",
-                "***",
-                "*",
-                "**",
+                4,
+                4,
+                4,
+                1,
+                2,
                 "Hello2", LocalDateTime.parse("2019-01-01T13:00")));
 
         mockMvc.perform(get("/reviews/report"))
@@ -124,10 +124,10 @@ public class ReviewControllerTest {
     public void shouldBeUpdateReview() throws Exception{
         Integer petId = petRepo.save(new Pet(null, "Gu4ka")).getId();
         Integer id = reviewRepo.save(new Review(null,null, petId,
-                "**",
-                "**",
-                "***",
-                "***",
+                2,
+                2,
+                3,
+                3,
                 null,
                 "Hello", LocalDateTime.parse("2019-01-01T12:00"))).getId();
 

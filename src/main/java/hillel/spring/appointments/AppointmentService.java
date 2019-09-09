@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,5 +39,9 @@ public class AppointmentService {
     @Retryable(StaleObjectStateException.class)
     public void saveAppointments(List<Appointment> appointmentOfSickDoc) {
         appointmentOfSickDoc.forEach(appointmentRepo::save);
+    }
+
+    public Optional<Appointment> findByPetId(Integer petId) {
+        return appointmentRepo.findByPetId(petId);
     }
 }

@@ -1,8 +1,10 @@
 package hillel.spring.reviews;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -10,7 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Data
-@Component
+@AllArgsConstructor
 public class ReviewReport {
     private Double serviceAvg;
     private Double equipmentAvg;
