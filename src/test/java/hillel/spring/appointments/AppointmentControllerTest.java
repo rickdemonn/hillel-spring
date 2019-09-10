@@ -45,7 +45,14 @@ public class AppointmentControllerTest {
 
     @Test
     public void getScheduleOfDoctor() throws Exception {
-        Integer docId = doctorRepo.save(new Doctor(null, "Aaa",false, List.of("veterinarian", "surgeon"))).getId();
+        Integer docId = doctorRepo.save(new Doctor(null,
+                null,
+                "AyBolit",
+                false,
+                List.of("veterinarian", "surgeon"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1)).getId();;
         Integer petId = petRepo.save(new Pet(null, "Gu4ka")).getId();
         Integer appId = appointmentRepo.save(new Appointment(null, 1, docId, petId, 9, LocalDate.parse("2019-01-01"))).getId();
 
@@ -61,7 +68,14 @@ public class AppointmentControllerTest {
 
     @Test
     public void makeAPetAppointment() throws Exception {
-        Integer docId = doctorRepo.save(new Doctor(null, "Aaa",false, List.of("veterinarian", "surgeon"))).getId();
+        Integer docId = doctorRepo.save(new Doctor(null,
+                null,
+                "AyBolit",
+                false,
+                List.of("veterinarian", "surgeon"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1)).getId();
         Integer petId = petRepo.save(new Pet(null, "Gu4ka")).getId();
         Integer pet2Id = petRepo.save(new Pet(null, "Gu4ka2")).getId();
         appointmentRepo.save(new Appointment(null,1, docId,petId,8,LocalDate.parse("2019-01-01")));
@@ -74,7 +88,14 @@ public class AppointmentControllerTest {
 
     @Test
     public void tryToMakeAppointmentWithWrongPetId() throws Exception{
-        Integer docId = doctorRepo.save(new Doctor(null, "Aaa",false, List.of("veterinarian", "surgeon"))).getId();
+        Integer docId = doctorRepo.save(new Doctor(null,
+                null,
+                "AyBolit",
+                false,
+                List.of("veterinarian", "surgeon"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1)).getId();
         Integer petId = petRepo.save(new Pet(null, "Gu4ka")).getId();
 
         mockMvc.perform(post("/doctors/{docId}/schedule/{date}/{busyHour}", docId, "2019-01-01", "8").contentType("application/json")
@@ -84,7 +105,14 @@ public class AppointmentControllerTest {
 
     @Test
     public void tryToMakeAppointmentWithWrongDocId() throws Exception{
-        Integer docId = doctorRepo.save(new Doctor(null, "Aaa",false, List.of("veterinarian", "surgeon"))).getId();
+        Integer docId = doctorRepo.save(new Doctor(null,
+                null,
+                "AyBolit",
+                false,
+                List.of("veterinarian", "surgeon"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1)).getId();
         Integer petId = petRepo.save(new Pet(null, "Gu4ka")).getId();
 
         mockMvc.perform(post("/doctors/{docId}/schedule/{date}/{busyHour}",150,"2019-01-01","8").contentType("application/json")
@@ -94,7 +122,14 @@ public class AppointmentControllerTest {
 
     @Test
     public void tryToMakeAppointmentWithWrongWorkingTime() throws Exception{
-        Integer docId = doctorRepo.save(new Doctor(null, "Aaa",false, List.of("veterinarian", "surgeon"))).getId();
+        Integer docId = doctorRepo.save(new Doctor(null,
+                null,
+                "AyBolit",
+                false,
+                List.of("veterinarian", "surgeon"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1)).getId();
         Integer petId = petRepo.save(new Pet(null, "Gu4ka")).getId();
 
         mockMvc.perform(post("/doctors/{docId}/schedule/{date}/{busyHour}",docId,"2019-01-01","3").contentType("application/json")

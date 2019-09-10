@@ -53,7 +53,14 @@ public class ReviewControllerTest {
     @Test
     public void shouldBeMakeReview() throws Exception{
         Integer petId = petRepo.save(new Pet(null, "Gu4ka")).getId();
-        Integer docId = doctorRepo.save(new Doctor(null,"AyBolit",false, List.of("veterinarian", "surgeon"))).getId();
+        Integer docId = doctorRepo.save(new Doctor(null,
+                null,
+                "AyBolit",
+                false,
+                 List.of("veterinarian", "surgeon"),
+                "Politeh",
+                 LocalDate.parse("2000-01-01"),
+                1)).getId();
         appointmentRepo.save(new Appointment(null,1, docId,petId,8, LocalDate.parse("2019-01-01")));
 
         mockMvc.perform(post("/reviews/{petId}", petId).contentType("application/json")
@@ -64,7 +71,14 @@ public class ReviewControllerTest {
     @Test
     public void tryToMakeReviewWithWrongAllowParameters() throws Exception{
         Integer petId = petRepo.save(new Pet(null, "Gu4ka")).getId();
-        Integer docId = doctorRepo.save(new Doctor(null,"AyBolit",false, List.of("veterinarian", "surgeon"))).getId();
+        Integer docId = doctorRepo.save(new Doctor(null,
+                null,
+                "AyBolit",
+                false,
+                List.of("veterinarian", "surgeon"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1)).getId();
         appointmentRepo.save(new Appointment(null,1, docId,petId,8, LocalDate.parse("2019-01-01")));
 
         mockMvc.perform(post("/reviews/{petId}", petId).contentType("application/json")
@@ -75,7 +89,14 @@ public class ReviewControllerTest {
     @Test
     public void tryToMakeReviewBeforeWentToTheReception() throws Exception{
         Integer petId = petRepo.save(new Pet(null, "Gu4ka")).getId();
-        Integer docId = doctorRepo.save(new Doctor(null,"AyBolit",false, List.of("veterinarian", "surgeon"))).getId();
+        Integer docId = doctorRepo.save(new Doctor(null,
+                null,
+                "AyBolit",
+                false,
+                List.of("veterinarian", "surgeon"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1)).getId();
         appointmentRepo.save(new Appointment(null,1, docId,petId,8, LocalDate.parse("2500-01-01")));//future
 
         mockMvc.perform(post("/reviews/{petId}", petId).contentType("application/json")
@@ -86,7 +107,14 @@ public class ReviewControllerTest {
     @Test
     public void tryToMakeTwoReviews() throws Exception{
         Integer petId = petRepo.save(new Pet(null, "Gu4ka")).getId();
-        Integer docId = doctorRepo.save(new Doctor(null,"AyBolit",false, List.of("veterinarian", "surgeon"))).getId();
+        Integer docId = doctorRepo.save(new Doctor(null,
+                null,
+                "AyBolit",
+                false,
+                List.of("veterinarian", "surgeon"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1)).getId();
         appointmentRepo.save(new Appointment(null,1, docId,petId,8, LocalDate.parse("2019-01-01")));
 
         mockMvc.perform(post("/reviews/{petId}", petId).contentType("application/json")

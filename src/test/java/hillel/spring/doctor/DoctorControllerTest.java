@@ -1,7 +1,10 @@
 package hillel.spring.doctor;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import hillel.spring.TestRunner;
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +18,12 @@ import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
 
+import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static org.assertj.core.api.Assertions.*;
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -34,6 +39,9 @@ public class DoctorControllerTest {
     @Autowired
     DoctorRepo doctorRepo;
 
+    @Rule
+    public WireMockRule wireMockRule = new WireMockRule(8089);
+
     @After
     public void cleanUp() {
         doctorRepo.deleteAll();
@@ -42,7 +50,14 @@ public class DoctorControllerTest {
 
     @Test
     public void findDoctorById() throws Exception {
-        Integer id = doctorRepo.save(new Doctor(null, "AiBolit",false, List.of("veterinarian", "surgeon"))).getId();
+        Integer id = doctorRepo.save(new Doctor(null,
+                null,
+                "AiBolit",
+                false,
+                List.of("veterinarian", "surgeon"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1)).getId();
 
         mockMvc.perform(get("/doctors/{id}", id))
                 .andExpect(status().isOk())
@@ -53,8 +68,22 @@ public class DoctorControllerTest {
 
     @Test
     public void shouldFindAllDoctors() throws Exception {
-        doctorRepo.save(new Doctor(null, "AiBolit",false, List.of("veterinarian")));
-        doctorRepo.save(new Doctor(null, "Dr. Chaos",false, List.of("veterinarian", "surgeon")));
+        doctorRepo.save(new Doctor(null,
+                null,
+                "AiBolit",
+                false,
+                List.of("veterinarian"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1));
+        doctorRepo.save(new Doctor(null,
+                null,
+                "Dr. Chaos",
+                false,
+                List.of("veterinarian", "surgeon"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1));
 
         mockMvc.perform(get("/doctors"))
                 .andExpect(status().isOk())
@@ -70,10 +99,38 @@ public class DoctorControllerTest {
 
     @Test
     public void shouldReturnSurgeon() throws Exception {
-        doctorRepo.save(new Doctor(null, "ccc",false, List.of("veterinarian", "surgeon")));
-        doctorRepo.save(new Doctor(null, "aaa",false, List.of("surgeon", "veterinarian")));
-        doctorRepo.save(new Doctor(null, "bbb",false, List.of("veterinarian", "geneticist")));
-        doctorRepo.save(new Doctor(null, "ccc",false, List.of("geneticist", "veterinarian")));
+        doctorRepo.save(new Doctor(null,
+                null,
+                "Dr. Chaos",
+                false,
+                List.of("veterinarian", "surgeon"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1));
+        doctorRepo.save(new Doctor(null,
+                null,
+                "Dr. Chaos",
+                false,
+                List.of("surgeon", "veterinarian"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1));
+        doctorRepo.save(new Doctor(null,
+                null,
+                "Dr. Chaos",
+                false,
+                List.of("veterinarian","geneticist"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1));
+        doctorRepo.save(new Doctor(null,
+                null,
+                "Dr. Chaos",
+                false,
+                List.of("geneticist", "veterinarian"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1));
 
         mockMvc.perform(get("/doctors").param("specializations", "surgeon"))
                 .andExpect(status().isOk())
@@ -82,11 +139,46 @@ public class DoctorControllerTest {
 
     @Test
     public void shouldReturnDoctorsByFirstLetterOfName() throws Exception {
-        doctorRepo.save(new Doctor(null, "Aaa",false, List.of("surgeon", "veterinarian")));
-        doctorRepo.save(new Doctor(null, "DAaa",false, List.of("surgeon", "veterinarian")));
-        doctorRepo.save(new Doctor(null, "bbb",false, List.of("surgeon", "veterinarian")));
-        doctorRepo.save(new Doctor(null, "ccc",false, List.of("surgeon", "veterinarian")));
-        doctorRepo.save(new Doctor(null, "aaa",false, List.of("surgeon", "veterinarian")));
+        doctorRepo.save(new Doctor(null,
+                null,
+                "Aaa",
+                false,
+                List.of("geneticist", "veterinarian"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1));
+        doctorRepo.save(new Doctor(null,
+                null,
+                "DAaa",
+                false,
+                List.of("geneticist", "veterinarian"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1));
+        doctorRepo.save(new Doctor(null,
+                null,
+                "bbb",
+                false,
+                List.of("geneticist", "veterinarian"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1));
+        doctorRepo.save(new Doctor(null,
+                null,
+                "ccc",
+                false,
+                List.of("geneticist", "veterinarian"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1));
+        doctorRepo.save(new Doctor(null,
+                null,
+                "aaa",
+                false,
+                List.of("geneticist", "veterinarian"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1));
 
         mockMvc.perform(get("/doctors").param("name", "A"))
                 .andExpect(status().isOk())
@@ -96,13 +188,62 @@ public class DoctorControllerTest {
 
     @Test
     public void shouldReturnDoctorsBySpecAndFirstLetter() throws Exception {
-        doctorRepo.save(new Doctor(null, "Aaa",false, List.of("surgeon", "veterinarian")));
-        doctorRepo.save(new Doctor(null, "DAaa",false, List.of("geneticist", "veterinarian")));
-        doctorRepo.save(new Doctor(null, "bbb",false, List.of("geneticist")));
-        doctorRepo.save(new Doctor(null, "ccc",false, List.of("surgeon")));
-        doctorRepo.save(new Doctor(null, "aaa",false, List.of("veterinarian")));
-        doctorRepo.save(new Doctor(null, "AAA",false, List.of("surgeon", "geneticist")));
-        doctorRepo.save(new Doctor(null, "BB",false, List.of("geneticist", "surgeon")));
+        doctorRepo.save(new Doctor(null,
+                null,
+                "Aaa",
+                false,
+                List.of("surgeon", "veterinarian"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1));
+        doctorRepo.save(new Doctor(null,
+                null,
+                "DAaa",
+                false,
+                List.of("geneticist", "veterinarian"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1));
+        doctorRepo.save(new Doctor(null,
+                null,
+                "bbb",
+                false,
+                List.of("geneticist", "veterinarian"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1));
+        doctorRepo.save(new Doctor(null,
+                null,
+                "ccc",
+                false,
+                List.of("geneticist", "veterinarian"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1));
+        doctorRepo.save(new Doctor(null,
+                null,
+                "aaa",
+                false,
+                List.of("geneticist", "veterinarian"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1));
+        doctorRepo.save(new Doctor(null,
+                null,
+                "AAA",
+                false,
+                List.of("surgeon", "veterinarian"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1));
+        doctorRepo.save(new Doctor(null,
+                null,
+                "BB",
+                false,
+                List.of("geneticist", "veterinarian"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1));
 
         mockMvc.perform(get("/doctors").param("name", "A").param("specializations", "surgeon"))
                 .andExpect(status().isOk())
@@ -115,10 +256,38 @@ public class DoctorControllerTest {
 
     @Test
     public void shouldReturnDoctorsBySpecializations() throws Exception {
-        doctorRepo.save(new Doctor(null,"Aaa",false, List.of("veterinarian", "surgeon")));
-        doctorRepo.save(new Doctor(null,"BBB",false, List.of("geneticist")));
-        doctorRepo.save(new Doctor(null,"CCC",false, List.of("geneticist")));
-        doctorRepo.save(new Doctor(null,"DDD",false, List.of("surgeon", "veterinarian")));
+        doctorRepo.save(new Doctor(null,
+                null,
+                "Aaa",
+                false,
+                List.of("veterinarian", "surgeon"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1));
+        doctorRepo.save(new Doctor(null,
+                null,
+                "BBB",
+                false,
+                List.of("geneticist"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1));
+        doctorRepo.save(new Doctor(null,
+                null,
+                "CCC",
+                false,
+                List.of("geneticist"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1));
+        doctorRepo.save(new Doctor(null,
+                null,
+                "DDD",
+                false,
+                List.of("surgeon", "veterinarian"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1));
 
         mockMvc.perform(get("/doctors").param("specializations","surgeon","veterinarian"))
                 .andExpect(status().isOk())
@@ -129,6 +298,9 @@ public class DoctorControllerTest {
 
     @Test
     public void shouldCreateDoctor() throws Exception {
+        WireMock.stubFor(WireMock.get("/info/1")
+                .willReturn(WireMock.okJson(fromResource("DoctorRestAPI/wiremock-response.json"))));
+
         MockHttpServletResponse response = mockMvc.perform(post("/doctors").contentType("application/json")
                 .content(fromResource("DoctorRestAPI/create-doctor.json")))
                 .andExpect(status().isCreated())
@@ -139,6 +311,10 @@ public class DoctorControllerTest {
                 .replace("http://localhost:8081/doctors/", ""));
 
         assertThat(doctorRepo.findById(id)).isPresent();
+
+        mockMvc.perform(get("/doctors/{id}", id))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.specializations[1]", is("veterinarian")));
     }
 
     @Test
@@ -150,11 +326,21 @@ public class DoctorControllerTest {
 
     @Test
     public void shouldUpdateDoctor() throws Exception {
-        Integer id = doctorRepo.save(new Doctor(null,"Aaa",false, List.of("veterinarian", "surgeon"))).getId();
+        WireMock.stubFor(WireMock.get("/info/1")
+                .willReturn(WireMock.okJson(fromResource("DoctorRestAPI/wiremock-response.json"))));
+
+        Integer id = doctorRepo.save(new Doctor(null,
+                null,
+                "DDD",
+                false,
+                List.of("surgeon", "veterinarian"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                2)).getId();
 
         mockMvc.perform(put("/doctors/{id}",id).contentType("application/json")
                 .content(fromResource("DoctorRestAPI/update-doctor.json")))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isAccepted());
 
         mockMvc.perform(put("/doctors/{id}",150).contentType("application/json")
                 .content(fromResource("DoctorRestAPI/update-doctor.json")))
@@ -169,7 +355,14 @@ public class DoctorControllerTest {
 
     @Test
     public void shouldDeleteDoctor() throws Exception {
-        Integer id = doctorRepo.save(new Doctor(null,"Aaa",false, List.of("veterinarian", "surgeon"))).getId();
+        Integer id = doctorRepo.save(new Doctor(null,
+                null,
+                "DDD",
+                false,
+                List.of("surgeon", "veterinarian"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1)).getId();
 
         mockMvc.perform(delete("/doctors/{id}",id))
                 .andExpect(status().isNoContent());
