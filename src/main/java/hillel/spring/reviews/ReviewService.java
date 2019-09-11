@@ -2,6 +2,7 @@ package hillel.spring.reviews;
 
 import hillel.spring.appointments.AppointmentService;
 import hillel.spring.pet.PetRepo;
+import hillel.spring.pet.PetService;
 import hillel.spring.pet.dto.PetNotFoundException;
 import hillel.spring.reviews.dto.ReviewDtoConverter;
 import hillel.spring.reviews.dto.ReviewInputWithTimeAndPetIdDto;
@@ -21,10 +22,11 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class ReviewService {
-    private final PetRepo petRepo;
+    private final PetService petService;
     private final ReviewRepo reviewRepo;
     private final AppointmentService appointmentService;
     private final ReviewDtoConverter dtoConverter;
+    private final Clock clock;
 
     public List<Review> findAll() {
         return reviewRepo.findAll();
@@ -36,9 +38,9 @@ public class ReviewService {
 
     public void makeReview(Review review) {
 
-        petRepo.findById(review.getPetId()).orElseThrow(PetNotFoundException::new);
+        petService.findPet(review.getPetId()).orElseThrow(PetNotFoundException::new);
 
-        review.setDate(LocalDateTime.now(Clock.systemUTC()));
+        review.setDate(LocalDateTime.now(clock));
 
         val mayBeAppointmentsOfPet = appointmentService.findByPetId(review.getPetId()).orElseThrow(WasNotAtTheReceptionException::new);
 
