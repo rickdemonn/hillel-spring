@@ -9,7 +9,6 @@ import lombok.val;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +19,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
@@ -37,10 +35,11 @@ public class DoctorController {
     public DoctorController(DoctorService doctorService,
                             DoctorDtoConverter doctorDtoConverter,
                             @Value("${server.address:localhost}") String hostname,
+                            RestTemplate restTemplate,
                             DoctorServiceConfig doctorServiceConfig) {
         this.doctorService = doctorService;
         this.doctorDtoConverter = doctorDtoConverter;
-        this.restTemplate = resTemplate();
+        this.restTemplate = restTemplate;
         this.doctorServiceConfig = doctorServiceConfig;
         this.uriComponentsBuilder = UriComponentsBuilder.newInstance()
                 .scheme("http")
@@ -108,11 +107,4 @@ public class DoctorController {
 
         doctorService.deleteDoctor(id);
     }
-
-    @Bean
-    public RestTemplate resTemplate() {
-        return new RestTemplate();
-    }
-
-
 }
