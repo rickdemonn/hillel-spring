@@ -17,9 +17,15 @@ spring:
 logging:
   level:
     sql: debug
-doctor.specializations:
+    org.springframework.web.client: debug
+    illel.spring.doctor: info
+doctor-specializations:
     specializations:
       - veterinarian
       - surgeon
       - geneticist
-
+doctor-service:
+  doctor-url:  "http://localhost:8082"
+---
+spring.profiles: test
+doctor-service.doctor-url: "http://localhost:8089"

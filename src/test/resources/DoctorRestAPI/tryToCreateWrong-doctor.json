@@ -1,5 +1,5 @@
 {
-  "name": "Zlo",
+  "name": null,
   "isSick": false,
-  "specializations":["surgeon","destroyer"]
+  "docInfoId": 1
 }

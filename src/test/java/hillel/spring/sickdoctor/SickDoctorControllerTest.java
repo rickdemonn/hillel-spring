@@ -48,8 +48,22 @@ public class SickDoctorControllerTest {
 
     @Test
     public void shouldBeDistributeDoctorRecords() throws Exception {
-        Integer firstDocId = doctorRepo.save(new Doctor(null, "AiBolit",true, List.of("veterinarian", "surgeon"))).getId();
-        Integer secondDocId = doctorRepo.save(new Doctor(null, "NeBolit",false, List.of("veterinarian", "surgeon"))).getId();
+        Integer firstDocId = doctorRepo.save(new Doctor(null,
+                null,
+                "AyBolit",
+                true,
+                List.of("veterinarian", "surgeon"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1)).getId();
+        Integer secondDocId = doctorRepo.save(new Doctor(null,
+                null,
+                "AyBolit",
+                false,
+                List.of("veterinarian", "surgeon"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1)).getId();
 
         Integer petId = petRepo.save(new Pet(null, "Bobik")).getId();
 
@@ -64,8 +78,22 @@ public class SickDoctorControllerTest {
 
     @Test
     public void tryToMakeDistributeDoctorRecordsWhenDoctorIsBusy() throws Exception {
-        Integer firstDocId = doctorRepo.save(new Doctor(null, "AiBolit",true, List.of("veterinarian", "surgeon"))).getId();
-        Integer secondDocId = doctorRepo.save(new Doctor(null, "NeBolit",false, List.of("veterinarian", "surgeon"))).getId();
+        Integer firstDocId = doctorRepo.save(new Doctor(null,
+                null,
+                "AyBolit",
+                false,
+                List.of("veterinarian", "surgeon"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1)).getId();
+        Integer secondDocId = doctorRepo.save(new Doctor(null,
+                null,
+                "AyBolit",
+                false,
+                List.of("veterinarian", "surgeon"),
+                "Politeh",
+                LocalDate.parse("2000-01-01"),
+                1)).getId();
 
         Integer petId = petRepo.save(new Pet(null, "Bobik")).getId();
 

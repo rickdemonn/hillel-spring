@@ -5,11 +5,14 @@ import hillel.spring.pet.dto.PetInputDto;
 import hillel.spring.pet.dto.PetNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.val;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -24,8 +27,8 @@ public class PetController {
             .path("/pets/{id}");
 
     @GetMapping("/pets")
-    public List<Pet> findAll() {
-        return petService.findAll();
+    public Page<Pet> findAll(Pageable pageable) {
+        return petService.findAll(pageable);
     }
 
     @GetMapping("/pets/{id}")
@@ -35,7 +38,7 @@ public class PetController {
 
     @PostMapping("/pets")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<?> createPet(@RequestBody PetInputDto dto) {
+    public ResponseEntity<?> createPet(@Valid @RequestBody PetInputDto dto) {
         val newPet = petDtoConverter.toModel(dto);
         petService.createPet(newPet);
         return ResponseEntity.created(uriComponentsBuilder.build(newPet.getId())).build();
@@ -43,7 +46,7 @@ public class PetController {
 
     @PutMapping("/pets/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updatePet(@PathVariable Integer id, @RequestBody PetInputDto dto) {
+    public void updatePet(@PathVariable Integer id, @Valid @RequestBody PetInputDto dto) {
         petService.findPet(id).orElseThrow(PetNotFoundException::new);
         petService.updatePet(petDtoConverter.toModel(id, dto));
     }

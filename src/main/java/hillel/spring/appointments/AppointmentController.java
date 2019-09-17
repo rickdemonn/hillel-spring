@@ -18,6 +18,7 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -66,7 +67,7 @@ public class AppointmentController {
     public void makeAPetAppointment(@PathVariable Integer docId,
                                     @PathVariable @DateTimeFormat(iso = ISO.DATE) LocalDate date,
                                     @PathVariable Integer busyHour,
-                                    @RequestBody AppointmentInputDto dto) {
+                                    @Valid @RequestBody AppointmentInputDto dto) {
 
         doctorService.findDoctorByID(docId).orElseThrow(DoctorNotFoundException::new);
 
