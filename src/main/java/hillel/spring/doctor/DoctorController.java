@@ -7,17 +7,18 @@ import hillel.spring.doctor.dto.DoctorOutputDto;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
@@ -27,17 +28,19 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 public class DoctorController {
     private final DoctorService doctorService;
     private final DoctorDtoConverter doctorDtoConverter;
-    private final SpecializationsConfig specializationsConfig;
     private final UriComponentsBuilder uriComponentsBuilder;
-
+    private final RestTemplate restTemplate;
+    private final DoctorServiceConfig doctorServiceConfig;
 
     public DoctorController(DoctorService doctorService,
                             DoctorDtoConverter doctorDtoConverter,
-                            SpecializationsConfig specializationsConfig,
-                            @Value("${server.address:localhost}") String hostname) {
+                            @Value("${server.address:localhost}") String hostname,
+                            RestTemplate restTemplate,
+                            DoctorServiceConfig doctorServiceConfig) {
         this.doctorService = doctorService;
         this.doctorDtoConverter = doctorDtoConverter;
-        this.specializationsConfig = specializationsConfig;
+        this.restTemplate = restTemplate;
+        this.doctorServiceConfig = doctorServiceConfig;
         this.uriComponentsBuilder = UriComponentsBuilder.newInstance()
                 .scheme("http")
                 .host(hostname)
@@ -64,20 +67,36 @@ public class DoctorController {
     public ResponseEntity<?> createDoctor(@Valid @RequestBody DoctorInputDto docDto) {
         val doctor = doctorDtoConverter.toModel(docDto);
 
-        val newDoc = doctorService.createDoctor(doctor);
-        return ResponseEntity.created(uriComponentsBuilder.build(newDoc.getId())).build();
-
+        try {
+            log.info("Start http request to info service");
+            val docInfo = restTemplate.getForObject(doctorServiceConfig.getDoctorUrl()+ "/info/" + doctor.getDocInfoId(), DocInfo.class);
+            log.info("Response: " + docInfo);
+            val id = doctorService.createDoctor(doctorDtoConverter.createInfo(doctor,docInfo));
+            return ResponseEntity.created(uriComponentsBuilder.build(id)).build();
+        } catch (Exception e) {
+            log.error("Info not found");
+        }
+        return ResponseEntity.badRequest().body("Info " + doctor.getDocInfoId() + " not found");
     }
 
     @PutMapping("/doctors/{id}")
-    @ResponseStatus(NO_CONTENT)
-    public void upDateDoctor(@PathVariable Integer id,
+    public ResponseEntity<?> upDateDoctor(@PathVariable Integer id,
                              @Valid @RequestBody DoctorInputDto docDto) {
 
-        doctorService.findDoctorByID(id).orElseThrow(DoctorNotFoundException::new);
         val doctor = doctorDtoConverter.toModel(docDto, id);
-
-        doctorService.upDateDoctor(doctor);
+        try {
+            log.info("Start http request to info service");
+            val docInfo = restTemplate.getForObject(doctorServiceConfig.getDoctorUrl()+ "/info/" + docDto.getDocInfoId(), DocInfo.class);
+            log.info("Response: " + docInfo);
+            doctorService.upDateDoctor(doctor, docInfo);
+            return ResponseEntity.accepted().build();
+        } catch (DoctorNotFoundException de){
+            log.error("Doc not found " + id);
+            throw de;
+        } catch (Exception e) {
+            log.error("Info not found");
+        }
+        return ResponseEntity.badRequest().body("Info " + doctor.getDocInfoId() + " not found");
     }
 
     @DeleteMapping("/doctors/{id}")
@@ -88,5 +107,4 @@ public class DoctorController {
 
         doctorService.deleteDoctor(id);
     }
-
 }

@@ -11,8 +11,9 @@ import java.util.List;
 
 @Data
 @Component
-@ConfigurationProperties("doctor-specializations")
+@ConfigurationProperties("doctor-service")
 @Validated
-public class SpecializationsConfig {
-    private List<String> specializations;
+public class DoctorServiceConfig {
+    @NotBlank
+    private String doctorUrl;
 }

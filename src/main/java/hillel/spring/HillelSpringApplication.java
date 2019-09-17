@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.Clock;
 
@@ -17,6 +18,11 @@ public class HillelSpringApplication {
 		SpringApplication.run(HillelSpringApplication.class, args);
 		log.info("Hello my friend:)");
 	}
+
+
+	@Bean
+	public RestTemplate resTemplate() {
+		return new RestTemplate();
 
 
 	@Bean
