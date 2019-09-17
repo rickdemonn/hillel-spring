@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Clock;
+
 @Slf4j
 @SpringBootApplication
 @EnableRetry
@@ -17,9 +19,15 @@ public class HillelSpringApplication {
 		log.info("Hello my friend:)");
 	}
 
+
 	@Bean
 	public RestTemplate resTemplate() {
 		return new RestTemplate();
+
+
+	@Bean
+	public Clock systemUtcClock(){
+		return Clock.systemUTC();
 	}
 
 }
