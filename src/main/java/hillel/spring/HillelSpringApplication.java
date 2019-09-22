@@ -23,7 +23,7 @@ public class HillelSpringApplication {
 	@Bean
 	public RestTemplate resTemplate() {
 		return new RestTemplate();
-
+	}
 
 	@Bean
 	public Clock systemUtcClock(){
